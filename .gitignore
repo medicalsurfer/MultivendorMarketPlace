@@ -1,0 +1,22 @@
+# Claude Code
+.claude/
+
+# Environment & secrets
+config/payment.php
+*.env
+.env*
+
+# Uploads (user content)
+uploads/*
+!uploads/.gitkeep
+
+# XAMPP / OS files
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# PHP cache
+*.cache
+
+# Logs
+*.log
