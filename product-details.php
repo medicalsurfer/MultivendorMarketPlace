@@ -106,7 +106,7 @@ include __DIR__ . '/includes/header.php';
 ══════════════════════════════════════════════════════ -->
 <div class="pdp-sticky" id="pdpStickyBar">
     <div class="pdp-sticky-inner">
-        <img src="<?= htmlspecialchars($product['image']) ?>"
+        <img src="<?= htmlspecialchars(getImageUrl($product['image'])) ?>"
              alt="" class="pdp-sticky-img"
              onerror="this.src='https://via.placeholder.com/56x56?text=+'">
         <div class="pdp-sticky-info">
@@ -153,7 +153,7 @@ include __DIR__ . '/includes/header.php';
         <!-- Zoom wrapper -->
         <div class="pdp-zoom-wrap" id="pdpZoomWrap">
             <img id="pdpMainImg"
-                 src="<?= htmlspecialchars($product['image']) ?>"
+                 src="<?= htmlspecialchars(getImageUrl($product['image'])) ?>"
                  alt="<?= htmlspecialchars($product['name']) ?>"
                  class="pdp-main-img"
                  onerror="this.src='https://via.placeholder.com/600x500?text=No+Image'">
@@ -183,17 +183,17 @@ include __DIR__ . '/includes/header.php';
 
         <!-- Thumbnails -->
         <div class="pdp-thumbs">
-            <button class="pdp-thumb active" data-src="<?= htmlspecialchars($product['image']) ?>">
-                <img src="<?= htmlspecialchars($product['image']) ?>" alt="">
+            <button class="pdp-thumb active" data-src="<?= htmlspecialchars(getImageUrl($product['image'])) ?>">
+                <img src="<?= htmlspecialchars(getImageUrl($product['image'])) ?>" alt="">
             </button>
-            <button class="pdp-thumb" data-src="<?= htmlspecialchars($product['image']) ?>" data-filter="brightness(0.85) saturate(1.2)">
-                <img src="<?= htmlspecialchars($product['image']) ?>" alt="" style="filter:brightness(0.85) saturate(1.2)">
+            <button class="pdp-thumb" data-src="<?= htmlspecialchars(getImageUrl($product['image'])) ?>" data-filter="brightness(0.85) saturate(1.2)">
+                <img src="<?= htmlspecialchars(getImageUrl($product['image'])) ?>" alt="" style="filter:brightness(0.85) saturate(1.2)">
             </button>
-            <button class="pdp-thumb" data-src="<?= htmlspecialchars($product['image']) ?>" data-filter="saturate(1.5) hue-rotate(8deg)">
-                <img src="<?= htmlspecialchars($product['image']) ?>" alt="" style="filter:saturate(1.5) hue-rotate(8deg)">
+            <button class="pdp-thumb" data-src="<?= htmlspecialchars(getImageUrl($product['image'])) ?>" data-filter="saturate(1.5) hue-rotate(8deg)">
+                <img src="<?= htmlspecialchars(getImageUrl($product['image'])) ?>" alt="" style="filter:saturate(1.5) hue-rotate(8deg)">
             </button>
-            <button class="pdp-thumb" data-src="<?= htmlspecialchars($product['image']) ?>" data-filter="brightness(1.08) contrast(1.05)">
-                <img src="<?= htmlspecialchars($product['image']) ?>" alt="" style="filter:brightness(1.08) contrast(1.05)">
+            <button class="pdp-thumb" data-src="<?= htmlspecialchars(getImageUrl($product['image'])) ?>" data-filter="brightness(1.08) contrast(1.05)">
+                <img src="<?= htmlspecialchars(getImageUrl($product['image'])) ?>" alt="" style="filter:brightness(1.08) contrast(1.05)">
             </button>
         </div>
     </div>
@@ -630,7 +630,7 @@ include __DIR__ . '/includes/header.php';
         <?php foreach ($relatedProducts as $rp): ?>
         <div class="product-card" onclick="window.location='<?= $B ?>/product-details.php?id=<?= $rp['id'] ?>'">
             <div class="product-img-wrap">
-                <img src="<?= htmlspecialchars($rp['image']) ?>"
+                <img src="<?= htmlspecialchars(getImageUrl($rp['image'])) ?>"
                      alt="<?= htmlspecialchars($rp['name']) ?>"
                      loading="lazy"
                      onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'">

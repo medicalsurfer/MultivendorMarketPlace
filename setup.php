@@ -138,7 +138,7 @@ try {
     // Demo vendor users
     $vendorHash = password_hash('vendor123', PASSWORD_DEFAULT);
     $pdo->exec("INSERT IGNORE INTO users (name, email, password, role) VALUES
-        ('Nike Store', 'nike@mlc.com', '$vendorHash', 'vendor'),
+        ('Nike Store', 'demovendor@gmail.com', '$vendorHash', 'vendor'),
         ('Adidas Store', 'adidas@mlc.com', '$vendorHash', 'vendor'),
         ('TechWorld', 'tech@mlc.com', '$vendorHash', 'vendor'),
         ('SportsPro', 'sports@mlc.com', '$vendorHash', 'vendor')");
@@ -146,7 +146,7 @@ try {
     // Demo customer
     $custHash = password_hash('customer123', PASSWORD_DEFAULT);
     $pdo->exec("INSERT IGNORE INTO users (name, email, password, role) VALUES
-        ('John Doe', 'john@mlc.com', '$custHash', 'customer')");
+        ('John Doe', 'democustomer@gmail.com', '$custHash', 'customer')");
 
     // Vendors
     $pdo->exec("INSERT IGNORE INTO vendors (user_id, store_name, description) VALUES
@@ -203,8 +203,8 @@ try {
     echo "<p><strong>Demo accounts:</strong></p>";
     echo "<ul>
         <li>Admin: admin@mlc.com / admin123</li>
-        <li>Vendor: nike@mlc.com / vendor123</li>
-        <li>Customer: john@mlc.com / customer123</li>
+        <li>Vendor: demovendor@gmail.com / vendor123</li>
+        <li>Customer: democustomer@gmail.com / customer123</li>
     </ul>";
     echo "<p><a href='index.php' style='background:#7C3AED;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;'>Go to Homepage →</a></p>";
 

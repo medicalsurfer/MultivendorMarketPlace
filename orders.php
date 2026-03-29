@@ -105,7 +105,7 @@ include __DIR__ . '/includes/header.php';
             <div class="order-items-list">
                 <?php foreach ($orderItems as $oi): ?>
                 <div class="order-item">
-                    <img src="<?= htmlspecialchars($oi['image']) ?>" alt="<?= htmlspecialchars($oi['name']) ?>" class="order-item-img">
+                    <img src="<?= htmlspecialchars(getImageUrl($oi['image'])) ?>" alt="<?= htmlspecialchars($oi['name']) ?>" class="order-item-img">
                     <div>
                         <div class="order-item-name"><?= htmlspecialchars($oi['name']) ?></div>
                         <div class="order-item-qty">Qty: <?= $oi['quantity'] ?> × <?= fcfa($oi['price']) ?></div>

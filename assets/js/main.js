@@ -68,8 +68,10 @@ function showToast(msg, type = 'default') {
     const icons = {
         success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>',
         error:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+        cart:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>',
         default: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
     };
+    if (type === 'cart') toast.classList.add('success');
     toast.innerHTML = `<span class="toast-icon">${icons[type] || icons.default}</span><span>${msg}</span>`;
     container.appendChild(toast);
     setTimeout(() => {
@@ -91,9 +93,8 @@ function addToCart(productId, qty = 1, btn) {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            showToast('Added to cart!', 'success');
+            showToast('Item added to cart', 'cart');
             updateCartBadge(data.cart_count);
-            openCartPreview();
             if (btn) { btn.disabled = false; btn.innerHTML = origHtml; }
         } else if (data.redirect) {
             window.location.href = data.redirect;
@@ -459,10 +460,6 @@ function loadCartPreview() {
     .catch(() => {});
 }
 
-// Auto-open cart preview on add (patch addToCart success)
-const _origUpdateCartBadge = updateCartBadge;
-// When cart item is added, also show the preview briefly
-document.addEventListener('cartAdded', () => openCartPreview());
 
 // ── Filter Drawer ────────────────────────────────────────────
 function openFilterDrawer() {

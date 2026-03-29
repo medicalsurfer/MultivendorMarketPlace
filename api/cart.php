@@ -58,6 +58,17 @@ switch ($action) {
         echo json_encode(['success' => true, 'cart_count' => cartCount($pdo, $userId), 'order_total' => cartTotal($pdo, $userId)]);
         break;
 
+    case 'get':
+        $s = $pdo->prepare("SELECT p.id, p.name, p.image, p.price, c.quantity FROM cart c JOIN products p ON p.id = c.product_id WHERE c.user_id = ? ORDER BY c.updated_at DESC");
+        $s->execute([$userId]);
+        $items = $s->fetchAll();
+        // Fix image URLs with getImageUrl
+        foreach ($items as &$item) {
+            $item['image'] = getImageUrl($item['image']);
+        }
+        echo json_encode(['success' => true, 'items' => $items]);
+        break;
+
     default:
         echo json_encode(['success' => false, 'error' => 'Invalid action']);
 }

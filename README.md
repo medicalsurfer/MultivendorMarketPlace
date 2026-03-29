@@ -94,8 +94,8 @@ cp config/payment.example.php config/payment.php
 | Role | Email | Password |
 |---|---|---|
 | Admin | admin@mlc.com | admin123 |
-| Vendor | nike@mlc.com | vendor123 |
-| Customer | john@mlc.com | customer123 |
+| Vendor | demovendor@gmail.com | vendor123 |
+| Customer | democustomer@gmail.com | customer123 |
 
 ---
 

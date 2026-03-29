@@ -11,7 +11,12 @@ switch ($action) {
         $q = '%' . trim($_GET['q'] ?? '') . '%';
         $stmt = $pdo->prepare("SELECT p.id, p.name, p.price, p.image FROM products p WHERE p.name LIKE ? LIMIT 8");
         $stmt->execute([$q]);
-        echo json_encode($stmt->fetchAll());
+        $results = $stmt->fetchAll();
+        // Fix image URLs with getImageUrl
+        foreach ($results as &$result) {
+            $result['image'] = getImageUrl($result['image']);
+        }
+        echo json_encode($results);
         break;
 
     default:

@@ -71,10 +71,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_product'])) {
     $imageUrl     = trim($_POST['image_url'] ?? '');
     $isTop        = isset($_POST['is_top_item']) ? 1 : 0;
     $deliveryType = $_POST['delivery_type'] ?? 'both';
+    
+    // Handle file upload
+    if (!empty($_FILES['product_image']['name'])) {
+        $file = $_FILES['product_image'];
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        $maxSize = 5 * 1024 * 1024; // 5MB
+        
+        if (!in_array($file['type'], $allowedTypes)) {
+            $addError = 'Invalid file type. Only JPG, PNG, GIF, and WebP are allowed.';
+        } elseif ($file['size'] > $maxSize) {
+            $addError = 'File is too large. Maximum size is 5MB.';
+        } elseif ($file['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = __DIR__ . '/../uploads/products/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $fileName = uniqid('prod_') . '_' . time() . '.' . pathinfo($file['name'], PATHINFO_EXTENSION);
+            $filePath = $uploadDir . $fileName;
+            
+            if (move_uploaded_file($file['tmp_name'], $filePath)) {
+                $imageUrl = BASE_URL . '/uploads/products/' . $fileName;
+            } else {
+                $addError = 'Failed to upload file. Please try again.';
+            }
+        } else {
+            $addError = 'File upload error. Please try again.';
+        }
+    }
 
     if (!$name || !$price || !$categoryId) {
         $addError = 'Name, price and category are required.';
-    } else {
+    } elseif (!$addError) {
         $pdo->prepare("INSERT INTO products (vendor_id, category_id, name, description, price, original_price, stock, image, brand, is_top_item, delivery_type) VALUES (?,?,?,?,?,?,?,?,?,?,?)")
             ->execute([$vendorId, $categoryId, $name, $description, $price, $origPrice, $stock, $imageUrl, $brand, $isTop, $deliveryType]);
         $addSuccess = 'Product added successfully!';
@@ -211,7 +239,7 @@ include __DIR__ . '/../includes/header.php';
                         <tr>
                             <td>
                                 <div style="display:flex;align-items:center;gap:10px;">
-                                    <img src="<?= htmlspecialchars($p['image']) ?>" alt="" class="table-img">
+                                    <img src="<?= htmlspecialchars(getImageUrl($p['image'])) ?>" alt="" class="table-img">
                                     <div>
                                         <div style="font-weight:600;font-size:0.875rem;"><?= htmlspecialchars(substr($p['name'],0,35)) ?>...</div>
                                         <div style="font-size:0.78rem;color:var(--text-mid);"><?= htmlspecialchars($p['brand'] ?? '') ?></div>
@@ -352,9 +380,20 @@ include __DIR__ . '/../includes/header.php';
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Image URL</label>
-                    <input type="url" name="image_url" placeholder="https://example.com/image.jpg">
-                    <p class="form-hint">Paste a public image URL for your product photo.</p>
+                    <label>Product Image</label>
+                    <div style="display: flex; gap: 12px;">
+                        <div style="flex: 1;">
+                            <label style="font-size: 0.85rem; color: var(--text-mid); margin-bottom: 4px; display: block;">Image URL</label>
+                            <input type="url" name="image_url" placeholder="https://example.com/image.jpg">
+                            <p class="form-hint">Or paste a public image URL</p>
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="font-size: 0.85rem; color: var(--text-mid); margin-bottom: 4px; display: block;">Upload from PC</label>
+                            <input type="file" name="product_image" accept="image/*" placeholder="Select image file">
+                            <p class="form-hint">JPG, PNG supported (max 5MB)</p>
+                        </div>
+                    </div>
+                    <p class="form-hint" style="margin-top: 8px; color: var(--text-light);">File upload takes priority over URL if both are provided</p>
                 </div>
                 <div class="form-row">
                     <div class="form-group">

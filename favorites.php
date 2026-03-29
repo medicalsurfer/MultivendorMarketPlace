@@ -50,7 +50,7 @@ include __DIR__ . '/includes/header.php';
             <div class="product-card"
                  onclick="window.location='<?= $B ?>/product-details.php?id=<?= $p['id'] ?>'">
                 <div class="product-img-wrap">
-                    <img src="<?= htmlspecialchars($p['image'] ?? '') ?>"
+                    <img src="<?= htmlspecialchars(getImageUrl($p['image'] ?? '')) ?>"
                          alt="<?= htmlspecialchars($p['name']) ?>"
                          loading="lazy"
                          onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'">

@@ -27,6 +27,24 @@ if (!function_exists('fcfa')) {
     }
 }
 
+// ── Image URL helper (ensures paths work with BASE_URL) ──
+if (!function_exists('getImageUrl')) {
+    function getImageUrl($imagePath): string {
+        if (!$imagePath) {
+            return '';
+        }
+        // If it's already a full URL, return as-is
+        if (filter_var($imagePath, FILTER_VALIDATE_URL)) {
+            return $imagePath;
+        }
+        // If it doesn't start with BASE_URL, prepend it
+        if (strpos($imagePath, BASE_URL) !== 0) {
+            return BASE_URL . $imagePath;
+        }
+        return $imagePath;
+    }
+}
+
 function getDB(): PDO {
     static $pdo = null;
     if ($pdo === null) {

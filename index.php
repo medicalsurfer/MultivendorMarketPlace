@@ -245,7 +245,7 @@ include __DIR__ . '/includes/header.php';
         </p>
         <div class="featured-product-card">
             <a href="<?= $B ?>/product-details.php?id=<?= $featured['id'] ?>">
-                <img src="<?= htmlspecialchars($featured['image'] ?? '') ?>"
+                <img src="<?= htmlspecialchars(getImageUrl($featured['image'] ?? '')) ?>"
                      alt="<?= htmlspecialchars($featured['name']) ?>"
                      class="featured-img">
             </a>
@@ -419,13 +419,13 @@ include __DIR__ . '/includes/header.php';
     </div>
 </div>
 
-<!-- ── Shop Layout ───────────────────────────────────────── -->
-<div class="shop-layout">
-
-    <!-- ── Smart Filter Bar ──────────────────────────────── -->
+<!-- ── Smart Filter Bar ──────────────────────────────── -->
     <div class="smart-bar">
-        <div class="smart-bar-left">
+        <div class="smart-bar-inner">
+
+            <!-- Count -->
             <span class="smart-bar-count">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
                 <strong><?= $totalProducts ?></strong> <?= $totalProducts === 1 ? 'product' : 'products' ?>
             </span>
 
@@ -487,9 +487,22 @@ include __DIR__ . '/includes/header.php';
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </a>
             <?php endif; ?>
-        </div>
 
-        <div class="smart-bar-right">
+            <!-- Product search -->
+            <form class="sbar-search" action="<?= $B ?>/index.php" method="GET">
+                <?php if ($catSlug): ?><input type="hidden" name="cat" value="<?= htmlspecialchars($catSlug) ?>"><?php endif; ?>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" name="q" placeholder="Search products…" value="<?= htmlspecialchars($search) ?>">
+            </form>
+
+            <!-- Separator -->
+            <span class="sbar-sep"></span>
+
+            <!-- Sort label + select -->
+            <span class="sbar-sort-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="9" y1="18" x2="15" y2="18"/></svg>
+                Sort
+            </span>
             <select id="sortSelect" class="sort-select">
                 <option value="default"    <?= $sort==='default'    ?'selected':''?>>Best Match</option>
                 <option value="price_asc"  <?= $sort==='price_asc'  ?'selected':''?>>Price: Low → High</option>
@@ -497,13 +510,22 @@ include __DIR__ . '/includes/header.php';
                 <option value="rating"     <?= $sort==='rating'     ?'selected':''?>>Top Rated</option>
                 <option value="newest"     <?= $sort==='newest'     ?'selected':''?>>Newest</option>
             </select>
+
+            <!-- Separator -->
+            <span class="sbar-sep"></span>
+
+            <!-- Filter button -->
             <button class="fd-open-btn" onclick="openFilterDrawer()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
                 Filters
                 <?php if ($activeCount > 0): ?><span class="fd-btn-badge"><?= $activeCount ?></span><?php endif; ?>
             </button>
+
         </div>
     </div>
+
+<!-- ── Shop Layout ───────────────────────────────────────── -->
+<div class="shop-layout">
 
     <!-- ── Products Section ─────────────────────────────── -->
     <section class="products-section">
@@ -538,7 +560,7 @@ include __DIR__ . '/includes/header.php';
                  onclick="window.location='<?= $B ?>/product-details.php?id=<?= $p['id'] ?>'">
 
                 <div class="product-img-wrap">
-                    <img src="<?= htmlspecialchars($p['image'] ?? '') ?>"
+                    <img src="<?= htmlspecialchars(getImageUrl($p['image'] ?? '')) ?>"
                          alt="<?= htmlspecialchars($p['name']) ?>"
                          loading="lazy"
                          onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'">

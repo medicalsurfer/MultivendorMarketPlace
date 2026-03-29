@@ -441,7 +441,7 @@ include __DIR__ . '/includes/header.php';
                     $lineXaf = (int)round($lineUsd * 655);
                 ?>
                 <div class="co-item">
-                    <img src="<?= htmlspecialchars($item['image'] ?? '') ?>"
+                    <img src="<?= htmlspecialchars(getImageUrl($item['image'] ?? '')) ?>"
                          alt="<?= htmlspecialchars($item['name']) ?>"
                          onerror="this.src='https://via.placeholder.com/52?text=?'">
                     <div class="co-item-info">

@@ -195,192 +195,303 @@ input{font-family:inherit}
 
 /* ── RIGHT PANEL ── */
 .login-right {
-    display:flex;align-items:center;justify-content:center;
-    padding:60px 48px;
-    background:#F5F3FF;
-    position:relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 40px;
+    background: linear-gradient(145deg, #f5f0ff 0%, #faf8ff 35%, #eef2ff 70%, #f8f5ff 100%);
+    background-size: 400% 400%;
+    animation: rightBgShift 14s ease infinite;
+    position: relative;
+    overflow: hidden;
+}
+@keyframes rightBgShift {
+    0%,100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
 }
 
-/* subtle grid dots bg */
+/* Subtle dot grid */
 .login-right::before {
-    content:'';position:absolute;inset:0;
-    background-image:radial-gradient(circle,rgba(124,58,237,.12) 1px,transparent 1px);
-    background-size:28px 28px;
-    pointer-events:none;z-index:0;
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(124,58,237,0.07) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Right panel soft orbs */
+.right-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    pointer-events: none;
+    z-index: 0;
+}
+.right-orb1 {
+    width: 320px; height: 320px;
+    background: rgba(124,58,237,0.10);
+    top: -80px; right: -80px;
+    animation: rightOrb1 12s ease-in-out infinite;
+}
+.right-orb2 {
+    width: 200px; height: 200px;
+    background: rgba(168,85,247,0.09);
+    bottom: -40px; left: -40px;
+    animation: rightOrb1 9s ease-in-out infinite reverse;
+}
+.right-orb3 {
+    width: 150px; height: 150px;
+    background: rgba(99,102,241,0.07);
+    top: 50%; left: 50%;
+    animation: rightOrb1 16s ease-in-out infinite 3s;
+}
+@keyframes rightOrb1 {
+    0%,100% { transform: translate(0,0) scale(1); }
+    40%     { transform: translate(-20px, 25px) scale(1.08); }
+    70%     { transform: translate(15px,-18px) scale(0.93); }
 }
 
 .login-card {
-    width:100%;max-width:420px;
-    position:relative;z-index:1;
-    animation: cardIn .7s cubic-bezier(.22,1,.36,1) both .1s;
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+    z-index: 1;
+    animation: cardIn .75s cubic-bezier(.22,1,.36,1) both .1s;
 }
-@keyframes cardIn{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes cardIn { from{opacity:0;transform:translateY(24px) scale(0.98)} to{opacity:1;transform:none} }
 
 .card-glass {
-    background:rgba(255,255,255,0.75);
-    border:1px solid rgba(255,255,255,0.9);
-    border-radius:28px;
-    padding:44px 40px;
-    box-shadow:0 24px 64px rgba(124,58,237,.14), 0 0 0 1px rgba(255,255,255,.5);
-    backdrop-filter:blur(20px);
-    -webkit-backdrop-filter:blur(20px);
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1.5px solid rgba(255,255,255,0.9);
+    border-radius: 24px;
+    padding: 40px 36px;
+    box-shadow:
+        0 8px 40px rgba(124,58,237,0.10),
+        0 1px 0 rgba(255,255,255,0.9) inset,
+        0 -1px 0 rgba(124,58,237,0.06) inset;
 }
 
-.card-header { text-align:center; margin-bottom:32px; }
-.card-header .logo-link { display:inline-block; margin-bottom:22px; }
-.card-header h1 { font-size:1.65rem; font-weight:800; color:#1F2937; letter-spacing:-.5px; margin-bottom:6px; }
-.card-header p { color:#6B7280; font-size:.9rem; }
+/* Staggered field entrance */
+.card-header  { animation: fieldIn .6s cubic-bezier(.22,1,.36,1) both .15s; }
+.field:nth-child(1) { animation: fieldIn .6s cubic-bezier(.22,1,.36,1) both .25s; }
+.field:nth-child(2) { animation: fieldIn .6s cubic-bezier(.22,1,.36,1) both .35s; }
+.btn-login    { animation: fieldIn .6s cubic-bezier(.22,1,.36,1) both .42s; }
+.divider      { animation: fieldIn .6s cubic-bezier(.22,1,.36,1) both .48s; }
+.demo-box     { animation: fieldIn .6s cubic-bezier(.22,1,.36,1) both .54s; }
+.auth-switch  { animation: fieldIn .6s cubic-bezier(.22,1,.36,1) both .60s; }
+@keyframes fieldIn { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:none} }
 
-/* ── Floating label inputs ── */
+/* Input glass style */
+.field-wrap input {
+    background: rgba(255,255,255,0.8) !important;
+    border: 1.5px solid rgba(124,58,237,0.12) !important;
+    backdrop-filter: blur(8px);
+    transition: border-color .2s, box-shadow .2s, background .2s !important;
+}
+.field-wrap input:focus {
+    background: rgba(255,255,255,0.97) !important;
+    border-color: #7C3AED !important;
+    box-shadow: 0 0 0 4px rgba(124,58,237,0.12), 0 2px 12px rgba(124,58,237,0.08) !important;
+}
+
+/* Demo box glass */
+.demo-box {
+    background: rgba(255,255,255,0.6) !important;
+    border: 1.5px solid rgba(124,58,237,0.10) !important;
+    backdrop-filter: blur(8px);
+}
+.demo-chip {
+    background: rgba(255,255,255,0.8) !important;
+}
+
+/* Mobile override */
+@media (max-width: 768px) {
+    .login-right { padding: 40px 20px; overflow-y: auto; }
+    .card-glass  { padding: 28px 20px; border-radius: 20px; }
+}
+
+/* ── Card header ── */
+.card-header { margin-bottom: 36px; }
+.card-header .logo-link { display: inline-block; margin-bottom: 28px; }
+.card-header h1 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #111827;
+    letter-spacing: -.6px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.card-header p { color: #6B7280; font-size: .9rem; line-height: 1.55; }
+
+/* ── Static label + input ── */
 .field {
-    position:relative;
-    margin-bottom:20px;
-}
-.field input {
-    width:100%;
-    padding:22px 48px 8px 48px;
-    border:1.5px solid #E5E7EB;
-    border-radius:14px;
-    font-size:.95rem;
-    font-weight:500;
-    background:#F9F7FF;
-    color:#1F2937;
-    outline:none;
-    transition:all .25s cubic-bezier(.4,0,.2,1);
-    height:62px;
-}
-.field input:focus {
-    border-color:#7C3AED;
-    background:white;
-    box-shadow:0 0 0 4px rgba(124,58,237,.1);
-}
-.field input:focus + .field-label,
-.field input:not(:placeholder-shown) + .field-label {
-    top:10px;
-    font-size:.7rem;
-    font-weight:700;
-    color:#7C3AED;
-    letter-spacing:.4px;
-    text-transform:uppercase;
+    margin-bottom: 18px;
 }
 .field-label {
-    position:absolute;
-    left:48px;
-    top:50%;transform:translateY(-50%);
-    font-size:.9rem;
-    color:#9CA3AF;
-    font-weight:500;
-    pointer-events:none;
-    transition:all .22s cubic-bezier(.4,0,.2,1);
-    background:transparent;
+    display: block;
+    font-size: .78rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+    letter-spacing: .2px;
 }
-.field-icon {
-    position:absolute;left:16px;top:50%;transform:translateY(-50%);
-    color:#9CA3AF;transition:color .22s;pointer-events:none;
+.field-wrap {
+    position: relative;
 }
-.field input:focus ~ .field-icon { color:#7C3AED; }
+.field-wrap input {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 12px;
+    font-size: .92rem;
+    font-weight: 400;
+    background: #ffffff;
+    color: #111827;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    box-sizing: border-box;
+    height: 50px;
+}
+.field-wrap input::placeholder { color: #9CA3AF; }
+.field-wrap input:focus {
+    border-color: #7C3AED;
+    box-shadow: 0 0 0 3px rgba(124,58,237,.12);
+}
 .field-eye {
-    position:absolute;right:14px;top:50%;transform:translateY(-50%);
-    background:none;border:none;color:#9CA3AF;
-    display:flex;align-items:center;padding:4px;
-    border-radius:6px;transition:color .2s;
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #9CA3AF;
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    border-radius: 6px;
+    transition: color .2s;
+    cursor: pointer;
 }
-.field-eye:hover{color:#7C3AED}
+.field-eye:hover { color: #7C3AED; }
+.field-wrap input.has-eye { padding-right: 44px; }
 
 /* ── Submit button ── */
 .btn-login {
-    width:100%;padding:16px;
-    background:linear-gradient(135deg,#7C3AED 0%,#6D28D9 100%);
-    color:white;border:none;border-radius:14px;
-    font-size:1rem;font-weight:700;
-    letter-spacing:-.2px;
-    cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);
-    display:flex;align-items:center;justify-content:center;gap:10px;
-    position:relative;overflow:hidden;margin-top:8px;
+    width: 100%;
+    padding: 14px;
+    background: #7C3AED;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: .95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .22s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 6px;
+    letter-spacing: .1px;
 }
-.btn-login::before {
-    content:'';position:absolute;inset:0;
-    background:linear-gradient(135deg,#8B5CF6,#7C3AED);
-    opacity:0;transition:opacity .25s;
-}
-.btn-login:hover::before{opacity:1}
-.btn-login:hover{box-shadow:0 8px 28px rgba(124,58,237,.45);transform:translateY(-1px)}
-.btn-login:active{transform:translateY(0)}
+.btn-login:hover { background: #6D28D9; box-shadow: 0 6px 20px rgba(124,58,237,.35); transform: translateY(-1px); }
+.btn-login:active { transform: translateY(0); box-shadow: none; }
 
 /* ── Divider ── */
 .divider {
-    display:flex;align-items:center;gap:12px;
-    margin:22px 0;color:#9CA3AF;font-size:.8rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 22px 0;
+    color: #9CA3AF;
+    font-size: .78rem;
+    font-weight: 500;
 }
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:#E5E7EB}
+.divider::before,.divider::after { content:''; flex:1; height:1px; background:#F3F4F6; }
 
 /* ── Demo box ── */
 .demo-box {
-    background:linear-gradient(135deg,rgba(124,58,237,.06),rgba(168,85,247,.06));
-    border:1px dashed rgba(124,58,237,.25);
-    border-radius:12px;padding:14px 16px;font-size:.78rem;
-    color:#6B7280;line-height:1.8;margin-top:16px;
+    background: #FAFAFA;
+    border: 1.5px solid #F3F4F6;
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-top: 4px;
 }
-.demo-box strong{color:#7C3AED;font-weight:700}
-.demo-row{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}
-.demo-chip{
-    background:rgba(124,58,237,.1);color:#7C3AED;
-    font-size:.73rem;font-weight:600;padding:3px 10px;
-    border-radius:50px;cursor:pointer;transition:background .2s;
-    border:none;font-family:inherit;
+.demo-box strong {
+    display: block;
+    font-size: .8rem;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 10px;
 }
-.demo-chip:hover{background:rgba(124,58,237,.2)}
+.demo-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.demo-chip {
+    flex: 1;
+    min-width: 110px;
+    background: #ffffff;
+    color: #374151;
+    font-size: .82rem;
+    font-weight: 600;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1.5px solid #E5E7EB;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+}
+.demo-chip:hover {
+    border-color: #7C3AED;
+    color: #7C3AED;
+    background: #F5F3FF;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(124,58,237,.12);
+}
+.demo-chip svg { flex-shrink: 0; }
 
 /* ── Switch link ── */
 .auth-switch {
-    text-align:center;margin-top:20px;
-    font-size:.875rem;color:#6B7280;
+    text-align: center;
+    margin-top: 22px;
+    font-size: .85rem;
+    color: #6B7280;
 }
-.auth-switch a{color:#7C3AED;font-weight:700;transition:color .2s}
-.auth-switch a:hover{color:#5B21B6}
+.auth-switch a { color: #7C3AED; font-weight: 700; transition: color .2s; }
+.auth-switch a:hover { color: #5B21B6; }
 
 /* ── Alert ── */
 .alert {
-    border-radius:12px;padding:12px 16px;
-    font-size:.875rem;font-weight:500;margin-bottom:20px;
-    display:flex;align-items:center;gap:10px;
-    animation:cardIn .35s ease both;
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: .85rem;
+    font-weight: 500;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
 }
-.alert-error{background:#FEF2F2;border:1px solid #FECACA;color:#DC2626}
-.alert-success{background:#F0FDF4;border:1px solid #BBF7D0;color:#16A34A}
+.alert-error   { background: #FEF2F2; border: 1px solid #FECACA; color: #DC2626; }
+.alert-success { background: #F0FDF4; border: 1px solid #BBF7D0; color: #16A34A; }
 
 /* ── Mobile ── */
-@media(max-width:768px){
-    .login-page{grid-template-columns:1fr}
-    .login-left{display:none}
-    .login-right{background:linear-gradient(135deg,#0f0720,#2d0b5e);min-height:100vh;padding:40px 24px}
-    .login-right::before{background-image:radial-gradient(circle,rgba(255,255,255,.07) 1px,transparent 1px)}
-    .card-glass{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,.18);box-shadow:none}
-    .card-header h1,.card-header p{color:white}
-    .field input{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);color:white}
-    .field input::placeholder{color:rgba(255,255,255,.4)}
-    .field-label{color:rgba(255,255,255,.5)}
-    .field input:focus + .field-label,
-    .field input:not(:placeholder-shown) + .field-label{color:#E9D5FF}
-    .field input:focus{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.5);box-shadow:none}
-    .auth-switch{color:rgba(255,255,255,.65)}
-    .auth-switch a{color:#E9D5FF}
-    .divider{color:rgba(255,255,255,.3)}
-    .divider::before,.divider::after{background:rgba(255,255,255,.15)}
-    .demo-box{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.6)}
-    .demo-box strong,.demo-chip{color:#E9D5FF}
-    .demo-chip{background:rgba(255,255,255,.1)}
+@media (max-width: 768px) {
+    .login-page  { grid-template-columns: 1fr; }
+    .login-left  { display: none; }
+    .login-right { padding: 40px 24px; background: #ffffff; min-height: 100vh; }
+    .login-card  { max-width: 100%; }
 }
 </style>
 </head>
 <body>
-<script>
-(function(){
-    const saved = localStorage.getItem('vnTheme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme:dark)').matches;
-    if(saved==='dark'||((!saved)&&prefersDark)) document.documentElement.setAttribute('data-theme','dark');
-})();
-</script>
 
 <div class="login-page">
 
@@ -502,7 +613,11 @@ input{font-family:inherit}
                             <text x="82" y="28" font-family="Inter,-apple-system,sans-serif" font-weight="800" font-size="21" letter-spacing="-0.5" fill="url(#lgT2)">mark</text>
                         </svg>
                     </a>
-                    <h1>Welcome back 👋</h1>
+                    <h1>Welcome back
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28" style="vertical-align:middle;margin-left:6px;color:#7C3AED" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
+                    </h1>
                     <p>Sign in to continue your shopping journey</p>
                 </div>
 
@@ -524,21 +639,28 @@ input{font-family:inherit}
 
                     <!-- Email -->
                     <div class="field">
-                        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                        <input type="email" name="email" id="emailInput" placeholder=" "
-                               value="<?= htmlspecialchars($_POST['email'] ?? '') ?>" required autocomplete="email">
                         <label class="field-label" for="emailInput">Email address</label>
+                        <div class="field-wrap">
+                            <input type="email" name="email" id="emailInput"
+                                   placeholder="you@example.com"
+                                   value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
+                                   required autocomplete="email">
+                        </div>
                     </div>
 
                     <!-- Password -->
                     <div class="field">
-                        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        <input type="password" name="password" id="pwInput" placeholder=" " required autocomplete="current-password">
                         <label class="field-label" for="pwInput">Password</label>
-                        <button type="button" class="field-eye" id="eyeBtn" title="Show/hide password" onclick="togglePw()">
-                            <svg id="eyeOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            <svg id="eyeClosed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-                        </button>
+                        <div class="field-wrap">
+                            <input type="password" name="password" id="pwInput"
+                                   class="has-eye" placeholder="••••••••"
+                                   required autocomplete="current-password">
+                            <button type="button" class="field-eye" id="eyeBtn"
+                                    title="Show/hide password" onclick="togglePw()">
+                                <svg id="eyeOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <svg id="eyeClosed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                            </button>
+                        </div>
                     </div>
 
                     <button type="submit" class="btn-login" id="loginBtn">
@@ -553,8 +675,14 @@ input{font-family:inherit}
                 <div class="demo-box">
                     <strong>Try a demo account</strong>
                     <div class="demo-row">
-                        <button class="demo-chip" onclick="fillDemo('john@mlc.com','customer123')">👤 Customer</button>
-                        <button class="demo-chip" onclick="fillDemo('nike@mlc.com','vendor123')">🏪 Vendor</button>
+                        <button class="demo-chip" onclick="fillDemo('democustomer@gmail.com','customer123')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            Customer
+                        </button>
+                        <button class="demo-chip" onclick="fillDemo('demovendor@gmail.com','vendor123')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9h14l-2-9"/><circle cx="10" cy="22" r="1"/><circle cx="17" cy="22" r="1"/></svg>
+                            Vendor
+                        </button>
                     </div>
                 </div>
 
@@ -578,14 +706,9 @@ function togglePw() {
 }
 
 function fillDemo(email, pw) {
-    const eInput = document.getElementById('emailInput');
-    const pInput = document.getElementById('pwInput');
-    eInput.value = email;
-    pInput.value = pw;
-    // Trigger floating labels
-    eInput.dispatchEvent(new Event('input'));
-    pInput.dispatchEvent(new Event('input'));
-    eInput.focus();
+    document.getElementById('emailInput').value = email;
+    document.getElementById('pwInput').value = pw;
+    document.getElementById('emailInput').focus();
 }
 
 document.getElementById('loginForm').addEventListener('submit', function() {

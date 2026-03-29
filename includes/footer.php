@@ -33,7 +33,7 @@
     <div class="footer-newsletter">
         <div class="footer-newsletter-inner">
             <div class="footer-newsletter-text">
-                <h3>Stay in the loop 🎯</h3>
+                <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24" style="display: inline-block; margin-right: 8px; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>Stay in the loop</h3>
                 <p>Get the best deals, new arrivals, and vendor news — no spam, ever.</p>
             </div>
             <form class="footer-newsletter-form" onsubmit="event.preventDefault();this.querySelector('button').textContent='Subscribed ✓';this.querySelector('input').value='';">

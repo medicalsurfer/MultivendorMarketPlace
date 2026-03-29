@@ -52,7 +52,7 @@ include __DIR__ . '/includes/header.php';
                 <?php foreach ($cartItems as $item): ?>
                 <div class="cart-item" id="cartItem<?= $item['product_id'] ?>">
                     <a href="<?= $B ?>/product-details.php?id=<?= $item['product_id'] ?>">
-                        <img src="<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['name']) ?>" class="cart-item-img">
+                        <img src="<?= htmlspecialchars(getImageUrl($item['image'])) ?>" alt="<?= htmlspecialchars($item['name']) ?>" class="cart-item-img">
                     </a>
                     <div class="cart-item-info">
                         <div class="cart-item-name"><?= htmlspecialchars($item['name']) ?></div>
