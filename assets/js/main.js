@@ -388,22 +388,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// ── Mobile Search ────────────────────────────────────────────
-function toggleMobileSearch() {
-    const bar   = document.getElementById('mobileSearchBar');
-    const input = document.getElementById('mobileSearchInput');
-    if (!bar) return;
-    const isOpen = bar.classList.toggle('open');
-    document.body.style.overflow = isOpen ? 'hidden' : '';
-    if (isOpen && input) setTimeout(() => input.focus(), 80);
-}
-document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-        const bar = document.getElementById('mobileSearchBar');
-        if (bar && bar.classList.contains('open')) toggleMobileSearch();
-    }
-});
-
 // ── Mobile Drawer ───────────────────────────────────────────
 function toggleMobileDrawer() {
     const drawer  = document.getElementById('mobileDrawer');

@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------
-   Venmark — Main Stylesheet
+   Venmark ï¿½ Main Stylesheet
    Modern multi-vendor marketplace UI
 ----------------------------------------------------------- */
 
@@ -1795,9 +1795,10 @@ input[type="checkbox"]:checked + .custom-checkbox,
 
 /* -- 640px: Mobile ----------------------------------------- */
 @media (max-width: 640px) {
-    /* Navbar: hide search, show icon only */
-    .nav-search      { display: none; }
-    .navbar-inner    { gap: 10px; }
+    /* Navbar: keep search visible, compact it */
+    .nav-search      { display: flex; flex: 1; min-width: 0; }
+    .nav-search input { font-size: 0.8rem; padding: 8px 12px 8px 36px; }
+    .navbar-inner    { gap: 8px; }
 
     /* Hero */
     .hero-main       { padding: 24px 20px; border-radius: 16px; }
@@ -1893,7 +1894,7 @@ input[type="checkbox"]:checked + .custom-checkbox,
     .fd-open-btn     { padding: 7px 10px; font-size: 0.78rem; }
 }
 
-/* -- Price Button (default — no modifier needed) ------------ */
+/* -- Price Button (default ï¿½ no modifier needed) ------------ */
 .price-btn {
     display: inline-flex;
     align-items: center;
@@ -2261,13 +2262,13 @@ input[type="range"]:active::-webkit-slider-thumb { transform:scale(1.1); }
 @media (hover:none) { .product-card:hover { transform:none !important; box-shadow:var(--shadow) !important; } }
 
 /* ----------------------------------------------------------
-   VENMARK LOGO — nav override
+   VENMARK LOGO ï¿½ nav override
 ---------------------------------------------------------- */
 .nav-logo { display:flex; align-items:center; flex-shrink:0; }
 .nav-logo svg { display:block; }
 
 /* ----------------------------------------------------------
-   PRODUCT DETAIL PAGE (PDP) — full redesign
+   PRODUCT DETAIL PAGE (PDP) ï¿½ full redesign
 ---------------------------------------------------------- */
 
 /* Layout */
@@ -3048,11 +3049,11 @@ input[type="range"]:active::-webkit-slider-thumb { transform:scale(1.1); }
 }
 
 /* -- Launch JSON config ----------------------------------- */
-/* (no styles needed — this is a note for setup) */
+/* (no styles needed ï¿½ this is a note for setup) */
 
 
 /* ----------------------------------------------------------
-   UI IMPROVEMENTS — Hero, Trust, Cards, Nav, Footer
+   UI IMPROVEMENTS ï¿½ Hero, Trust, Cards, Nav, Footer
 ---------------------------------------------------------- */
 
 /* -- Hero stats row ---------------------------------------- */
@@ -3272,7 +3273,7 @@ input[type="range"]:active::-webkit-slider-thumb { transform:scale(1.1); }
 .footer-payments { display:flex; align-items:center; gap:6px; }
 .payment-badge { padding:4px 10px; border-radius:6px; background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.8); font-size:0.7rem; font-weight:700; letter-spacing:0.5px; border:1px solid rgba(255,255,255,0.15); }
 
-/* (UI improvements responsive — handled by main responsive system above) */
+/* (UI improvements responsive ï¿½ handled by main responsive system above) */
 
 /* -- Smart Bar --------------------------------------------- */
 .smart-bar {
