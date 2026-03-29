@@ -5,25 +5,6 @@
 // Base URL set by footer.php (works for root and XAMPP subdirectory)
 const BASE = window.MLC_BASE || '';
 
-// ── Dark / Light Theme ─────────────────────────────────────
-(function () {
-    const saved = localStorage.getItem('vnTheme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (saved === 'dark' || (!saved && prefersDark)) {
-        document.documentElement.setAttribute('data-theme', 'dark');
-    }
-})();
-
-function toggleTheme() {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    if (isDark) {
-        document.documentElement.removeAttribute('data-theme');
-        localStorage.setItem('vnTheme', 'light');
-    } else {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        localStorage.setItem('vnTheme', 'dark');
-    }
-}
 
 // ── FCFA Currency Helper ───────────────────────────────────
 function mlcFCFA(usdAmount) {
@@ -405,6 +386,22 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[onclick*="addToCart"]').forEach(btn => {
         btn.dataset.originalHtml = btn.innerHTML;
     });
+});
+
+// ── Mobile Search ────────────────────────────────────────────
+function toggleMobileSearch() {
+    const bar   = document.getElementById('mobileSearchBar');
+    const input = document.getElementById('mobileSearchInput');
+    if (!bar) return;
+    const isOpen = bar.classList.toggle('open');
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    if (isOpen && input) setTimeout(() => input.focus(), 80);
+}
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        const bar = document.getElementById('mobileSearchBar');
+        if (bar && bar.classList.contains('open')) toggleMobileSearch();
+    }
 });
 
 // ── Mobile Drawer ───────────────────────────────────────────
