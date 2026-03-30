@@ -115,9 +115,118 @@
     </div>
 </footer>
 
+<!-- ── Mobile Bottom Navigation ────────────────────────── -->
+<nav class="mob-bottom-nav" id="mobBottomNav">
+    <a href="<?= $B ?>/index.php" class="mob-nav-item <?= basename($_SERVER['PHP_SELF'],'.php') === 'index' ? 'active' : '' ?>">
+        <span class="mob-nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </span>
+        <span class="mob-nav-label">Home</span>
+    </a>
+    <a href="<?= $B ?>/index.php?cat=#products" class="mob-nav-item" id="mobCatBtn" onclick="openMobCats(event)">
+        <span class="mob-nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+        </span>
+        <span class="mob-nav-label">Categories</span>
+    </a>
+    <a href="<?= $B ?>/cart.php" class="mob-nav-item mob-cart-item <?= basename($_SERVER['PHP_SELF'],'.php') === 'cart' ? 'active' : '' ?>">
+        <span class="mob-nav-icon mob-cart-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            <?php if ($cartCount > 0): ?><span class="mob-badge"><?= $cartCount ?></span><?php endif; ?>
+        </span>
+        <span class="mob-nav-label">Cart</span>
+    </a>
+    <a href="<?= $B ?>/favorites.php" class="mob-nav-item <?= basename($_SERVER['PHP_SELF'],'.php') === 'favorites' ? 'active' : '' ?>">
+        <span class="mob-nav-icon mob-fav-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <?php if ($favCount > 0): ?><span class="mob-badge"><?= $favCount ?></span><?php endif; ?>
+        </span>
+        <span class="mob-nav-label">Saved</span>
+    </a>
+    <?php if (isLoggedIn()): ?>
+    <a href="<?= $B ?>/orders.php" class="mob-nav-item <?= basename($_SERVER['PHP_SELF'],'.php') === 'orders' ? 'active' : '' ?>">
+        <span class="mob-nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+        </span>
+        <span class="mob-nav-label">Orders</span>
+    </a>
+    <?php else: ?>
+    <a href="<?= $B ?>/login.php" class="mob-nav-item <?= basename($_SERVER['PHP_SELF'],'.php') === 'login' ? 'active' : '' ?>">
+        <span class="mob-nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </span>
+        <span class="mob-nav-label">Account</span>
+    </a>
+    <?php endif; ?>
+</nav>
+
+<!-- ── Mobile Search Overlay ────────────────────────────── -->
+<div class="mob-search-overlay" id="mobSearchOverlay">
+    <div class="mob-search-inner">
+        <button class="mob-search-back" onclick="closeMobSearch()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="22" height="22"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <form action="<?= $B ?>/index.php" method="GET" class="mob-search-form">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" name="q" placeholder="Search products, brands…" autofocus
+                   value="<?= htmlspecialchars($_GET['q'] ?? '') ?>" id="mobSearchInput">
+        </form>
+    </div>
+</div>
+
+<!-- ── Mobile Categories Sheet ──────────────────────────── -->
+<div class="mob-cats-overlay" id="mobCatsOverlay" onclick="closeMobCats()"></div>
+<div class="mob-cats-sheet" id="mobCatsSheet">
+    <div class="mob-cats-handle"></div>
+    <div class="mob-cats-header">
+        <span>Categories</span>
+        <button onclick="closeMobCats()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="mob-cats-grid">
+        <?php
+        $mobCatIcons = [
+            'deals'=>'🏷️','crypto'=>'₿','fashion'=>'👗','health-wellness'=>'💊',
+            'art'=>'🎨','home'=>'🏠','sport'=>'⚽','music'=>'🎵','gaming'=>'🎮','electronics'=>'💻'
+        ];
+        ?>
+        <a href="<?= $B ?>/index.php#products" class="mob-cat-chip" onclick="closeMobCats()">
+            <span class="mob-cat-emoji">🛍️</span>
+            <span>All</span>
+        </a>
+        <?php
+        $mobCategories = $pdo->query("SELECT * FROM categories WHERE slug != 'all' ORDER BY id")->fetchAll();
+        foreach ($mobCategories as $mc):
+            $mslug = $mc['slug'];
+        ?>
+        <a href="<?= $B ?>/index.php?cat=<?= urlencode($mslug) ?>#products" class="mob-cat-chip" onclick="closeMobCats()">
+            <span class="mob-cat-emoji"><?= $mobCatIcons[$mslug] ?? '📦' ?></span>
+            <span><?= htmlspecialchars($mc['name']) ?></span>
+        </a>
+        <?php endforeach; ?>
+    </div>
+</div>
+
 <script>
-// Make BASE_URL available to main.js
 window.MLC_BASE = '<?= $B ?>';
+// Mobile search
+function openMobSearch()  { document.getElementById('mobSearchOverlay').classList.add('open'); setTimeout(()=>document.getElementById('mobSearchInput')?.focus(),120); }
+function closeMobSearch() { document.getElementById('mobSearchOverlay').classList.remove('open'); }
+// Mobile categories sheet
+function openMobCats(e)  { if(e) e.preventDefault(); document.getElementById('mobCatsSheet').classList.add('open'); document.getElementById('mobCatsOverlay').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeMobCats()  { document.getElementById('mobCatsSheet').classList.remove('open'); document.getElementById('mobCatsOverlay').classList.remove('open'); document.body.style.overflow=''; }
+// Wire up mobile search icon in navbar
+document.addEventListener('DOMContentLoaded', () => {
+    const msi = document.getElementById('mobSearchTrigger');
+    if (msi) msi.addEventListener('click', openMobSearch);
+    // Hide bottom nav on scroll down, show on scroll up
+    let lastY = 0;
+    const bn = document.getElementById('mobBottomNav');
+    window.addEventListener('scroll', () => {
+        const y = window.scrollY;
+        if (bn) bn.style.transform = (y > lastY && y > 80) ? 'translateY(100%)' : 'translateY(0)';
+        lastY = y;
+    }, { passive: true });
+});
 </script>
 <script src="<?= $B ?>/assets/js/main.js"></script>
 <script src="<?= $B ?>/assets/js/animations.js" defer></script>

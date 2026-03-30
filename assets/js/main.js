@@ -267,6 +267,18 @@ function initDeliveryFilter() {
     });
 }
 
+// ── Category Filter (drawer pills) ────────────────────────
+function initCatFilter() {
+    document.querySelectorAll('.fd-cat-item').forEach(item => {
+        item.addEventListener('click', () => {
+            document.querySelectorAll('.fd-cat-item').forEach(i => i.classList.remove('selected'));
+            item.classList.add('selected');
+            const radio = item.querySelector('.fd-cat-radio');
+            if (radio) radio.checked = true;
+        });
+    });
+}
+
 // ── Apply All Filters ──────────────────────────────────────
 function applyFilters() {
     const params  = new URLSearchParams(window.location.search);
@@ -288,8 +300,12 @@ function applyFilters() {
         params.set('delivery', activeDelivery.dataset.type);
     else params.delete('delivery');
 
+    const selectedCat = document.querySelector('.fd-cat-radio:checked');
+    if (selectedCat && selectedCat.value) params.set('cat', selectedCat.value);
+    else params.delete('cat');
+
     params.delete('page');
-    window.location.search = params.toString();
+    window.location.href = window.location.pathname + '?' + params.toString() + '#products';
 }
 
 // ── Sort ───────────────────────────────────────────────────
@@ -378,6 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initStarFilter();
     initBrandFilter();
     initDeliveryFilter();
+    initCatFilter();
     initSort();
     initThumbs();
     initQtyControl();

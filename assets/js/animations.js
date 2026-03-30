@@ -1,5 +1,5 @@
 ﻿/* ═══════════════════════════════════════════════════════════
-   MLC Marketplace — Animations & Micro-interactions
+   Venmark — Animations & Micro-interactions v2
    Runs AFTER main.js via defer
 ═══════════════════════════════════════════════════════════ */
 
@@ -35,16 +35,43 @@ window.addEventListener('scroll', () => {
     progressBar.style.width = Math.min(100, pct) + '%';
 }, { passive: true });
 
-// ── Cursor Glow ────────────────────────────────────────────
+// ── Cursor System (glow + dot + ring) ─────────────────────
 const cursorGlow = Object.assign(document.createElement('div'), { className: 'cursor-glow' });
-document.body.appendChild(cursorGlow);
-let mx = -300, my = -300, gx = -300, gy = -300;
+const cursorDot  = Object.assign(document.createElement('div'), { className: 'cursor-dot' });
+const cursorRing = Object.assign(document.createElement('div'), { className: 'cursor-ring' });
+document.body.append(cursorGlow, cursorDot, cursorRing);
+
+let mx = -300, my = -300;
+let gx = -300, gy = -300;
+let rx = -300, ry = -300;
+
 document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
-(function glowLoop() {
+document.addEventListener('mousedown', () => document.body.classList.add('cursor-clicking'));
+document.addEventListener('mouseup',   () => document.body.classList.remove('cursor-clicking'));
+
+// Hoverable elements trigger ring expansion
+const hoverables = 'a, button, [role="button"], input, select, textarea, label, .product-card, .cat-tab, .nav-dropdown-item, .fd-cat-item';
+document.addEventListener('mouseover', e => {
+    if (e.target.closest(hoverables)) document.body.classList.add('cursor-hover');
+}, { passive: true });
+document.addEventListener('mouseout', e => {
+    if (e.target.closest(hoverables)) document.body.classList.remove('cursor-hover');
+}, { passive: true });
+
+(function cursorLoop() {
+    // Dot follows instantly
+    cursorDot.style.left = mx + 'px';
+    cursorDot.style.top  = my + 'px';
+    // Glow trails slowly
     gx += (mx - gx) * 0.1;
     gy += (my - gy) * 0.1;
     cursorGlow.style.transform = `translate(${gx}px, ${gy}px) translate(-50%, -50%)`;
-    requestAnimationFrame(glowLoop);
+    // Ring trails medium speed
+    rx += (mx - rx) * 0.18;
+    ry += (my - ry) * 0.18;
+    cursorRing.style.left = rx + 'px';
+    cursorRing.style.top  = ry + 'px';
+    requestAnimationFrame(cursorLoop);
 })();
 
 // ── Scroll Reveal (Intersection Observer) ─────────────────
@@ -235,3 +262,93 @@ window.checkEmptyCart = function () {
         }
     }
 };
+
+// ── Login card tilt ────────────────────────────────────────
+const loginCard = document.querySelector('.card-glass');
+if (loginCard) {
+    const loginRight = loginCard.closest('.login-right');
+    const tiltEl = loginRight || loginCard;
+    tiltEl.addEventListener('mousemove', e => {
+        const r = loginCard.getBoundingClientRect();
+        const x = (e.clientX - r.left - r.width  / 2) / r.width;
+        const y = (e.clientY - r.top  - r.height / 2) / r.height;
+        loginCard.style.transform = `perspective(900px) rotateX(${-y * 6}deg) rotateY(${x * 6}deg) translateY(-4px)`;
+        loginCard.style.boxShadow = `${-x * 18}px ${-y * 12}px 48px rgba(124,58,237,.18), inset 0 1px 0 rgba(255,255,255,.9)`;
+    });
+    tiltEl.addEventListener('mouseleave', () => {
+        loginCard.style.transform = '';
+        loginCard.style.boxShadow = '';
+    });
+}
+
+// ── Product image spotlight on mousemove ──────────────────
+document.addEventListener('mousemove', e => {
+    const wrap = e.target.closest('.product-img-wrap');
+    if (!wrap) return;
+    const r  = wrap.getBoundingClientRect();
+    const px = ((e.clientX - r.left) / r.width  * 100).toFixed(1);
+    const py = ((e.clientY - r.top)  / r.height * 100).toFixed(1);
+    wrap.style.setProperty('--mx', px + '%');
+    wrap.style.setProperty('--my', py + '%');
+}, { passive: true });
+
+// ── Magnetic pull on primary buttons ─────────────────────
+document.querySelectorAll('.btn-primary, .btn-login, .checkout-btn, .fd-apply-btn').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+        const r  = btn.getBoundingClientRect();
+        const dx = (e.clientX - (r.left + r.width  / 2)) * 0.22;
+        const dy = (e.clientY - (r.top  + r.height / 2)) * 0.22;
+        btn.style.transform = `translate(${dx}px, ${dy}px) translateY(-3px) scale(1.02)`;
+    });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+});
+
+// ── Nav dropdown icon bounce on item hover ────────────────
+document.querySelectorAll('.nav-dropdown-item').forEach(item => {
+    const icon = item.querySelector('.nav-dropdown-icon svg');
+    if (!icon) return;
+    item.addEventListener('mouseenter', () => {
+        icon.style.transition = 'transform .3s cubic-bezier(.34,1.56,.64,1)';
+        icon.style.transform  = 'scale(1.3) rotate(-12deg)';
+    });
+    item.addEventListener('mouseleave', () => { icon.style.transform = ''; });
+});
+
+// ── Trust item icon spin on hover ─────────────────────────
+document.querySelectorAll('.trust-item').forEach(item => {
+    const icon = item.querySelector('.trust-icon, svg');
+    if (!icon) return;
+    item.addEventListener('mouseenter', () => {
+        icon.style.transition = 'transform .4s cubic-bezier(.34,1.56,.64,1)';
+        icon.style.transform  = 'rotateY(180deg) scale(1.1)';
+    });
+    item.addEventListener('mouseleave', () => { icon.style.transform = ''; });
+});
+
+// ── Smart bar search input focus glow ────────────────────
+const sbarInput = document.querySelector('.sbar-search input');
+if (sbarInput) {
+    const form = sbarInput.closest('.sbar-search');
+    sbarInput.addEventListener('focus', () => {
+        if (form) form.style.boxShadow = '0 0 0 3px rgba(124,58,237,.18), 0 4px 16px rgba(124,58,237,.12)';
+    });
+    sbarInput.addEventListener('blur', () => {
+        if (form) form.style.boxShadow = '';
+    });
+}
+
+// ── Stat cards number shimmer on hover ────────────────────
+document.querySelectorAll('.stat-card').forEach(card => {
+    const num = card.querySelector('.stat-value, [data-count], h3, .stat-number');
+    if (!num) return;
+    card.addEventListener('mouseenter', () => {
+        num.style.transition = 'transform .3s cubic-bezier(.34,1.56,.64,1)';
+        num.style.transform  = 'scale(1.08)';
+    });
+    card.addEventListener('mouseleave', () => { num.style.transform = ''; });
+});
+
+// ── Re-init card tilt after dynamic content ───────────────
+const gridObserver = new MutationObserver(() => initCardTilt());
+const grid = document.querySelector('.products-grid');
+if (grid) gridObserver.observe(grid, { childList: true });
