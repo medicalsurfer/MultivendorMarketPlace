@@ -38,6 +38,8 @@ window.addEventListener('load', () => {
 document.addEventListener('click', e => {
     const a = e.target.closest('a[href]');
     if (!a || e.ctrlKey || e.metaKey || e.shiftKey || a.target === '_blank') return;
+    // Category tabs are handled by AJAX in main.js — skip fade-out for them
+    if (a.classList.contains('cat-tab') || a.closest('.nav-dropdown-item')) return;
     const href = a.getAttribute('href');
     if (!href || href.startsWith('#') || href.startsWith('javascript') || href.startsWith('mailto')) return;
     e.preventDefault();

@@ -388,6 +388,122 @@ function initHeroCarousel() {
     setInterval(() => goTo(current + 1), 4000);
 }
 
+// ── AJAX Category Switcher ─────────────────────────────────
+// Intercepts .cat-tab and .nav-dropdown-item clicks on index.php
+// Fetches filtered products and swaps them in without a page reload
+(function initAjaxCats() {
+    // Only run on the index/shop page
+    if (!document.getElementById('products')) return;
+
+    const productsSection = document.getElementById('products');
+    const navbarH = () => (document.querySelector('.navbar')?.offsetHeight || 70);
+    const catBarH = () => (document.querySelector('.category-bar')?.offsetHeight || 0);
+
+    function scrollToProducts() {
+        const offset = navbarH() + catBarH() + 8;
+        const top = productsSection.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    }
+
+    function setLoading(on) {
+        const grid = document.querySelector('.products-grid, .empty-state');
+        if (!grid) return;
+        if (on) {
+            grid.style.transition = 'opacity 0.18s ease';
+            grid.style.opacity    = '0.35';
+            grid.style.pointerEvents = 'none';
+        } else {
+            grid.style.opacity    = '1';
+            grid.style.pointerEvents = '';
+        }
+    }
+
+    function swapProducts(html) {
+        const parser  = new DOMParser();
+        const doc     = parser.parseFromString(html, 'text/html');
+
+        // Swap products grid
+        const newGrid = doc.querySelector('.products-grid') || doc.querySelector('.empty-state');
+        const oldGrid = document.querySelector('.products-grid') || document.querySelector('.empty-state');
+        if (newGrid && oldGrid) {
+            oldGrid.style.opacity = '0';
+            setTimeout(() => {
+                oldGrid.replaceWith(newGrid);
+                newGrid.style.opacity = '0';
+                newGrid.style.transition = 'opacity 0.25s ease';
+                requestAnimationFrame(() => { newGrid.style.opacity = '1'; });
+                // Re-init card animations if animations.js exposed initCardTilt
+                if (typeof initCardTilt === 'function') initCardTilt();
+                // Re-run reveal observer
+                if (typeof observeReveal === 'function') observeReveal();
+            }, 180);
+        }
+
+        // Swap topbar result count
+        const newTopbar = doc.querySelector('.products-topbar');
+        const oldTopbar = document.querySelector('.products-topbar');
+        if (newTopbar && oldTopbar) oldTopbar.replaceWith(newTopbar);
+
+        // Swap pagination
+        const newPager = doc.querySelector('.pagination');
+        const oldPager = document.querySelector('.pagination');
+        if (newPager && oldPager) oldPager.replaceWith(newPager);
+        else if (!newPager && oldPager) oldPager.remove();
+    }
+
+    function updateActiveTabs(catParam) {
+        document.querySelectorAll('.cat-tab').forEach(tab => {
+            const href   = tab.getAttribute('href') || '';
+            const url    = new URL(href, window.location.origin);
+            const tabCat = url.searchParams.get('cat') || '';
+            tab.classList.toggle('active', tabCat === catParam);
+        });
+    }
+
+    async function loadCategory(url, catParam) {
+        setLoading(true);
+        scrollToProducts();
+        try {
+            const res  = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            const html = await res.text();
+            swapProducts(html);
+            history.pushState({ cat: catParam }, '', url);
+            updateActiveTabs(catParam);
+        } catch (err) {
+            // Fallback to normal navigation on error
+            window.location.href = url;
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // Delegate click on all category tabs + nav dropdown items
+    document.addEventListener('click', e => {
+        const link = e.target.closest('.cat-tab, .nav-dropdown-item');
+        if (!link) return;
+        const href = link.getAttribute('href');
+        if (!href || href.startsWith('javascript')) return;
+
+        // Strip the #products hash for the fetch URL
+        const fetchUrl = href.replace(/#.*$/, '');
+        const urlObj   = new URL(fetchUrl, window.location.origin);
+        const catParam = urlObj.searchParams.get('cat') || '';
+
+        // Close nav dropdown if open
+        document.querySelector('.nav-products')?.classList.remove('open');
+
+        e.preventDefault();
+        e.stopPropagation();
+        loadCategory(fetchUrl, catParam);
+    }, true);
+
+    // Handle browser back/forward
+    window.addEventListener('popstate', e => {
+        const catParam = e.state?.cat ?? new URLSearchParams(window.location.search).get('cat') ?? '';
+        loadCategory(window.location.href.replace(/#.*$/, ''), catParam);
+    });
+})();
+
 // ── Init ───────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     initPriceSlider();
