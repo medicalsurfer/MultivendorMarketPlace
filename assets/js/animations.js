@@ -15,7 +15,25 @@ window.formatFCFA = function (usdAmount) {
 
 // ── Page Fade-in / Fade-out on navigation ─────────────────
 document.documentElement.style.cssText += ';opacity:0;transition:opacity .3s ease';
-window.addEventListener('load', () => { document.documentElement.style.opacity = '1'; });
+window.addEventListener('load', () => {
+    document.documentElement.style.opacity = '1';
+
+    // After fade-in completes, scroll to hash anchor if present
+    // (browser scroll happens before layout is ready so we redo it)
+    const hash = window.location.hash;
+    if (hash && hash !== '#') {
+        setTimeout(() => {
+            const target = document.querySelector(hash);
+            if (target) {
+                const navH = document.querySelector('.navbar')?.offsetHeight || 70;
+                const catH = document.querySelector('.category-bar')?.offsetHeight || 0;
+                const offset = navH + catH + 12;
+                const top = target.getBoundingClientRect().top + window.scrollY - offset;
+                window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+            }
+        }, 320); // wait for fade-in to finish (300ms) + small buffer
+    }
+});
 
 document.addEventListener('click', e => {
     const a = e.target.closest('a[href]');

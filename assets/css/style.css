@@ -516,70 +516,56 @@ input, select, textarea { font-family: inherit; }
 .dropdown-item.text-danger:hover { background: #FEE2E2; color: var(--danger); }
 
 /* -- Category Tabs ----------------------------------------- */
-/* ── Category bar ─────────────────────────────────────────── */
+/* ── Category bar wrapper ────────────────────────────────── */
 .category-bar {
-    background: linear-gradient(135deg, #f5f0ff 0%, #ede8ff 30%, #f8f4ff 60%, #ece5ff 100%);
-    background-size: 400% 400%;
-    animation: catBarShift 8s ease infinite;
-    border-bottom: 1px solid rgba(124,58,237,0.12);
-    border-top: 1px solid rgba(255,255,255,0.9);
+    background: linear-gradient(135deg, #f3eeff 0%, #ede5ff 25%, #f7f2ff 50%, #e9e0ff 75%, #f3eeff 100%);
+    background-size: 300% 300%;
+    animation: catBarDrift 14s ease-in-out infinite;
+    border-bottom: 1px solid rgba(124,58,237,0.10);
     position: relative;
     overflow: hidden;
+    will-change: background-position;
 }
-/* Animated shimmer sweep on the bar itself */
+
+/* Single clean shimmer sweep — slow & silky */
 .category-bar::before {
     content: '';
     position: absolute;
-    inset: 0;
+    top: 0; left: -60%;
+    width: 40%;
+    height: 100%;
     background: linear-gradient(90deg,
         transparent 0%,
-        rgba(124,58,237,0.06) 30%,
-        rgba(168,85,247,0.12) 50%,
-        rgba(236,72,153,0.05) 70%,
+        rgba(255,255,255,0.55) 50%,
         transparent 100%);
-    background-size: 300% 100%;
-    animation: catBarSweep 3.5s ease-in-out infinite;
+    animation: catShimmer 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     pointer-events: none;
+    will-change: transform;
 }
-/* Floating orbs behind the bar */
-.category-bar::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-        radial-gradient(ellipse 120px 40px at 15% 50%, rgba(124,58,237,0.07) 0%, transparent 70%),
-        radial-gradient(ellipse 100px 35px at 50% 50%, rgba(168,85,247,0.06) 0%, transparent 70%),
-        radial-gradient(ellipse 80px 30px at 85% 50%, rgba(236,72,153,0.05) 0%, transparent 70%);
-    animation: catOrbDrift 6s ease-in-out infinite alternate;
-    pointer-events: none;
-}
-@keyframes catBarShift {
-    0%   { background-position: 0% 50%; }
+
+@keyframes catBarDrift {
+    0%   { background-position: 0%   50%; }
     50%  { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    100% { background-position: 0%   50%; }
 }
-@keyframes catBarSweep {
-    0%   { background-position: -100% 0; opacity: 0.6; }
-    50%  { opacity: 1; }
-    100% { background-position: 220% 0; opacity: 0.6; }
-}
-@keyframes catOrbDrift {
-    0%   { transform: translateX(-20px); opacity: 0.6; }
-    100% { transform: translateX(20px);  opacity: 1; }
+@keyframes catShimmer {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(280%); }
 }
 
 /* Inline copy above product grid */
 .inline-cat-bar {
     position: static;
-    border-bottom: none;
     border-top: 1px solid rgba(124,58,237,0.08);
-    background: linear-gradient(135deg, #f8f5ff 0%, #f0ebff 50%, #f8f5ff 100%);
+    border-bottom: none;
+    background: linear-gradient(135deg, #f7f4ff 0%, #f0ebff 50%, #f7f4ff 100%);
     background-size: 300% 300%;
-    animation: catBarShift 8s ease infinite;
+    animation: catBarDrift 14s ease-in-out infinite;
     margin-bottom: 8px;
+    will-change: background-position;
 }
 
-/* ── Category Tabs container ─────────────────────────────── */
+/* ── Category Tabs row ───────────────────────────────────── */
 .category-tabs {
     max-width: 1280px;
     margin: 0 auto;
@@ -590,45 +576,10 @@ input, select, textarea { font-family: inherit; }
     scrollbar-width: none;
     -ms-overflow-style: none;
     position: relative;
-    /* Tabs row own subtle gradient */
-    background: linear-gradient(90deg,
-        rgba(255,255,255,0.55) 0%,
-        rgba(245,240,255,0.35) 50%,
-        rgba(255,255,255,0.55) 100%);
-    background-size: 200% 100%;
-    animation: tabsRowShimmer 5s linear infinite;
-    border-radius: 0;
 }
 .category-tabs::-webkit-scrollbar { display: none; }
 
-@keyframes tabsRowShimmer {
-    0%   { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-
-/* ── Left/right fade masks for scrollable overflow ──────── */
-.category-bar {
-    -webkit-mask-image: linear-gradient(to right, transparent 0px, black 24px, black calc(100% - 24px), transparent 100%);
-    mask-image: linear-gradient(to right, transparent 0px, black 24px, black calc(100% - 24px), transparent 100%);
-}
-
-/* ── Sliding active pill indicator ──────────────────────── */
-.category-tabs::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--primary), #a855f7, transparent);
-    border-radius: 2px;
-    width: 100%;
-    animation: tabsUnderline 3s ease-in-out infinite;
-    pointer-events: none;
-}
-@keyframes tabsUnderline {
-    0%,100% { opacity: 0.3; transform: scaleX(0.6) translateX(-20%); }
-    50%      { opacity: 0.7; transform: scaleX(1)   translateX(0); }
-}
-
+/* ── Each pill tab ───────────────────────────────────────── */
 .cat-tab {
     display: flex;
     align-items: center;
@@ -639,49 +590,62 @@ input, select, textarea { font-family: inherit; }
     font-size: 0.875rem;
     font-weight: 500;
     white-space: nowrap;
-    border: 1.5px solid transparent;
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(8px);
-    transition: color .22s, background .22s, border-color .22s, transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .22s;
+    border: 1.5px solid rgba(124,58,237,0.08);
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition:
+        color        0.25s ease,
+        background   0.25s ease,
+        border-color 0.25s ease,
+        transform    0.3s  cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow   0.3s  ease;
     cursor: pointer;
     text-decoration: none;
     position: relative;
+    will-change: transform;
 }
 .cat-tab:hover {
     color: var(--primary);
-    background: rgba(124,58,237,0.09);
-    border-color: rgba(124,58,237,0.22);
-    transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 6px 18px rgba(124,58,237,0.16);
+    background: rgba(124,58,237,0.08);
+    border-color: rgba(124,58,237,0.20);
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 6px 20px rgba(124,58,237,0.15);
 }
+
+/* ── Active tab — animated gradient ─────────────────────── */
 .cat-tab.active {
     color: white;
     background: linear-gradient(135deg, #7C3AED 0%, #9333ea 50%, #a855f7 100%);
     background-size: 200% 200%;
-    animation: activeTabGlow 3s ease infinite;
+    animation: activeTabShift 4s ease-in-out infinite;
     border-color: transparent;
     font-weight: 600;
-    box-shadow: 0 4px 20px rgba(124,58,237,0.40), inset 0 1px 0 rgba(255,255,255,0.2);
     transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 4px 18px rgba(124,58,237,0.38), inset 0 1px 0 rgba(255,255,255,0.18);
+    will-change: background-position;
 }
-@keyframes activeTabGlow {
-    0%,100% { background-position: 0% 50%; box-shadow: 0 4px 20px rgba(124,58,237,0.40), inset 0 1px 0 rgba(255,255,255,0.2); }
-    50%      { background-position: 100% 50%; box-shadow: 0 6px 28px rgba(124,58,237,0.60), 0 0 0 3px rgba(124,58,237,0.12), inset 0 1px 0 rgba(255,255,255,0.25); }
+@keyframes activeTabShift {
+    0%   { background-position: 0%   50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0%   50%; }
 }
-/* Active tab glow pulse ring */
+
+/* Active tab soft outer glow ring */
 .cat-tab.active::before {
     content: '';
     position: absolute;
-    inset: -3px;
+    inset: -4px;
     border-radius: 50px;
-    background: linear-gradient(135deg, #7C3AED, #a855f7, #ec4899);
-    opacity: 0;
+    background: linear-gradient(135deg, rgba(124,58,237,0.35), rgba(168,85,247,0.25));
     z-index: -1;
-    animation: tabGlowPulse 2.5s ease-in-out infinite;
+    opacity: 0;
+    animation: activeRingPulse 3s ease-in-out infinite;
+    will-change: opacity, transform;
 }
-@keyframes tabGlowPulse {
-    0%, 100% { opacity: 0;    transform: scale(1); }
-    50%       { opacity: 0.3; transform: scale(1.06); }
+@keyframes activeRingPulse {
+    0%, 100% { opacity: 0;    transform: scale(1);    }
+    50%       { opacity: 1;   transform: scale(1.05); }
 }
 
 /* -- Hero Banner ------------------------------------------- */
@@ -2335,19 +2299,38 @@ input[type="checkbox"]:checked + .custom-checkbox,
 .hero-main > div[style]      { animation: fadeInScale .5s cubic-bezier(.34,1.56,.64,1) both .44s; }
 .hero-side                   { animation: fadeInUp   .7s  cubic-bezier(.22,1,.36,1) both .22s; }
 
-/* -- Category tabs stagger -------------------------------- */
-.cat-tab { animation: fadeInUp .4s ease both; overflow:hidden; }
-.cat-tab:nth-child(1){animation-delay:0ms}   .cat-tab:nth-child(2){animation-delay:45ms}
-.cat-tab:nth-child(3){animation-delay:90ms}  .cat-tab:nth-child(4){animation-delay:135ms}
-.cat-tab:nth-child(5){animation-delay:180ms} .cat-tab:nth-child(6){animation-delay:225ms}
-.cat-tab:nth-child(7){animation-delay:270ms} .cat-tab:nth-child(8){animation-delay:315ms}
-.cat-tab:nth-child(9){animation-delay:360ms} .cat-tab:nth-child(10){animation-delay:405ms}
-.cat-tab:nth-child(11){animation-delay:450ms}.cat-tab:nth-child(12){animation-delay:495ms}
+/* -- Category tabs entrance stagger ----------------------- */
+/* Entrance-only: uses a separate CSS var so active loop is not disrupted */
+.cat-tab {
+    animation: catTabEnter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+    overflow: hidden;
+}
+.cat-tab:nth-child(1)  { animation-delay: 0ms;   }
+.cat-tab:nth-child(2)  { animation-delay: 40ms;  }
+.cat-tab:nth-child(3)  { animation-delay: 80ms;  }
+.cat-tab:nth-child(4)  { animation-delay: 120ms; }
+.cat-tab:nth-child(5)  { animation-delay: 160ms; }
+.cat-tab:nth-child(6)  { animation-delay: 200ms; }
+.cat-tab:nth-child(7)  { animation-delay: 240ms; }
+.cat-tab:nth-child(8)  { animation-delay: 280ms; }
+.cat-tab:nth-child(9)  { animation-delay: 320ms; }
+.cat-tab:nth-child(10) { animation-delay: 360ms; }
+.cat-tab:nth-child(11) { animation-delay: 400ms; }
+.cat-tab:nth-child(12) { animation-delay: 440ms; }
+@keyframes catTabEnter {
+    from { opacity: 0; transform: translateY(10px) scale(0.94); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+/* Active tab overrides the entrance with its loop — reset delay to 0 */
+.cat-tab.active {
+    animation: activeTabShift 4s ease-in-out infinite;
+    animation-delay: 0s !important;
+}
 
-/* -- Cat tab icon spin on hover --------------------------- */
-.cat-tab svg { transition:transform .22s cubic-bezier(.34,1.56,.64,1); }
-.cat-tab:hover svg { transform:scale(1.35) rotate(-10deg); }
-.cat-tab.active svg { transform:scale(1.1); color:var(--primary); }
+/* -- Cat tab icon on hover/active ------------------------- */
+.cat-tab svg { transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.cat-tab:hover svg  { transform: scale(1.3) rotate(-10deg); }
+.cat-tab.active svg { transform: scale(1.1); filter: brightness(1.3); }
 
 /* -- Product card stagger --------------------------------- */
 .products-grid .product-card { animation: fadeInUp .52s cubic-bezier(.22,1,.36,1) both; }

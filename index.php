@@ -528,7 +528,7 @@ include __DIR__ . '/includes/header.php';
 <div class="shop-layout">
 
     <!-- ── Products Section ─────────────────────────────── -->
-    <section class="products-section">
+    <section class="products-section" id="products">
         <div class="products-topbar">
             <h2>
                 <?php if ($search): ?>
