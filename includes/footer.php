@@ -51,13 +51,13 @@
                         <stop offset="0%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#6D28D9"/>
                     </linearGradient>
                     <linearGradient id="ftTextG" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stop-color="#7C3AED"/><stop offset="100%" stop-color="#A855F7"/>
+                        <stop offset="0%" stop-color="#C4B5FD"/><stop offset="100%" stop-color="#E9D5FF"/>
                     </linearGradient>
                 </defs>
                 <rect x="0" y="4" width="32" height="32" rx="9" fill="url(#ftIconG)"/>
                 <path d="M7.5 13L16 27L24.5 13" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
                 <circle cx="16" cy="30.5" r="1.8" fill="white" opacity="0.9"/>
-                <text x="42" y="28" font-family="Inter,-apple-system,sans-serif" font-weight="800" font-size="21" letter-spacing="-0.5" fill="#7C3AED">Ven</text>
+                <text x="42" y="28" font-family="Inter,-apple-system,sans-serif" font-weight="800" font-size="21" letter-spacing="-0.5" fill="white">Ven</text>
                 <text x="82" y="28" font-family="Inter,-apple-system,sans-serif" font-weight="800" font-size="21" letter-spacing="-0.5" fill="url(#ftTextG)">mark</text>
             </svg>
             <p>Your trusted multi-vendor marketplace.<br>Shop from thousands of verified sellers worldwide.</p>

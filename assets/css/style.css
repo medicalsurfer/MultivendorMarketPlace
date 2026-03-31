@@ -1784,7 +1784,7 @@ input[type="checkbox"]:checked + .custom-checkbox,
 
 /* -- Footer ------------------------------------------------- */
 .site-footer {
-    background: var(--text-dark);
+    background: #120038;
     color: white;
     margin-top: auto;
 }
@@ -1803,6 +1803,7 @@ input[type="checkbox"]:checked + .custom-checkbox,
 .footer-col a { display: block; color: rgba(255,255,255,0.5); font-size: 0.875rem; margin-bottom: 10px; transition: var(--transition); }
 .footer-col a:hover { color: white; }
 .footer-bottom {
+    background: #0a0025;
     border-top: 1px solid rgba(255,255,255,0.1);
     padding: 20px 24px;
     text-align: center;
@@ -3452,7 +3453,7 @@ input[type="range"]:active::-webkit-slider-thumb { transform:scale(1.1); }
 .skeleton-line.medium { width:75%; }
 
 /* -- Footer newsletter ------------------------------------- */
-.footer-newsletter { background:linear-gradient(135deg,#1a0050 0%,var(--primary) 100%); padding:40px 0; }
+.footer-newsletter { background:#1a0050; padding:40px 0; }
 .footer-newsletter-inner { max-width:1280px; margin:0 auto; padding:0 24px; display:flex; align-items:center; gap:40px; flex-wrap:wrap; justify-content:space-between; }
 .footer-newsletter-text h3 { font-size:1.25rem; font-weight:800; color:white; margin-bottom:4px; }
 .footer-newsletter-text p { color:rgba(255,255,255,0.7); font-size:0.875rem; }
