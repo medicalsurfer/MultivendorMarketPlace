@@ -173,13 +173,13 @@ include __DIR__ . '/includes/header.php';
 <!-- ── Category Bar ──────────────────────────────────────── -->
 <div class="category-bar">
     <div class="category-tabs">
-        <a href="<?= $B ?>/index.php" class="cat-tab <?= empty($catSlug) ? 'active' : '' ?>">
+        <a href="<?= $B ?>/index.php#products" class="cat-tab <?= empty($catSlug) ? 'active' : '' ?>">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
             All Categories
         </a>
         <?php foreach ($categories as $cat): ?>
             <?php $slug = $cat['slug'] ?? ''; if ($slug === 'all') continue; ?>
-            <a href="<?= $B ?>/index.php?cat=<?= urlencode($slug) ?>"
+            <a href="<?= $B ?>/index.php?cat=<?= urlencode($slug) ?>#products"
                class="cat-tab <?= $catSlug === $slug ? 'active' : '' ?>">
                 <?= $catSvgIcons[$slug] ?? '' ?>
                 <?= htmlspecialchars($cat['name']) ?>
@@ -528,7 +528,7 @@ include __DIR__ . '/includes/header.php';
 <div class="shop-layout">
 
     <!-- ── Products Section ─────────────────────────────── -->
-    <section class="products-section">
+    <section class="products-section" id="products">
         <div class="products-topbar">
             <h2>
                 <?php if ($search): ?>
