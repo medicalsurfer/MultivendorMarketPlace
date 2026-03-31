@@ -1803,12 +1803,12 @@ input[type="checkbox"]:checked + .custom-checkbox,
 .footer-col a { display: block; color: rgba(255,255,255,0.5); font-size: 0.875rem; margin-bottom: 10px; transition: var(--transition); }
 .footer-col a:hover { color: white; }
 .footer-bottom {
-    background: #0a0025;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    background: #1a0050;
+    border-top: 1px solid rgba(255,255,255,0.12);
     padding: 20px 24px;
     text-align: center;
     font-size: 0.82rem;
-    color: rgba(255,255,255,0.4);
+    color: rgba(255,255,255,0.5);
 }
 
 /* -- Toast ------------------------------------------------- */

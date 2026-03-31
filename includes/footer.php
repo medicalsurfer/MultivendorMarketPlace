@@ -86,7 +86,7 @@
     </div>
     <div class="footer-bottom">
         <div class="footer-bottom-row">
-            <p style="color:rgba(255,255,255,0.4);font-size:0.82rem;">&copy; <?= date('Y') ?> Venmark. All rights reserved.</p>
+            <p style="color:rgba(255,255,255,0.55);font-size:0.82rem;">&copy; <?= date('Y') ?> Venmark. All rights reserved.</p>
 
             <!-- Social links -->
             <div class="footer-social">
