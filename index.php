@@ -112,33 +112,54 @@ if (isLoggedIn()) {
     $userFavs = array_column($s->fetchAll(), 'product_id');
 }
 
-// ── AJAX pagination handler ──────────────────────────────
-if (!empty($_GET['ajax'])) {
-    header('Content-Type: application/json');
-    ob_start();
-    if (empty($products)): ?>
-        <div class="empty-state">
-            <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="48" height="48"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-            <h3>No products found</h3>
-            <p>Try adjusting your filters or search term.</p>
+// ── Brands for sidebar ────────────────────────────────────
+$allBrands = $pdo->query(
+    "SELECT DISTINCT brand FROM products WHERE brand IS NOT NULL AND brand != '' ORDER BY brand"
+)->fetchAll(PDO::FETCH_COLUMN);
+
+// ── Check if this is an AJAX request ─────────────────────
+$isAjax = ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest';
+
+// ── If AJAX request, output only products section and exit ──
+if ($isAjax) {
+    ?>
+    <section class="products-section" id="products">
+        <div class="products-topbar">
+            <h2>
+                <?php if ($search): ?>
+                    Results for "<em><?= htmlspecialchars($search) ?></em>"
+                <?php elseif ($activeCat): ?>
+                    <?= htmlspecialchars($activeCat['name']) ?>
+                <?php else: ?>
+                    All Products
+                <?php endif; ?>
+            </h2>
         </div>
-    <?php else: ?>
+
+        <?php if (empty($products)): ?>
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="48" height="48"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </div>
+                <h3>No products found</h3>
+                <p>Try adjusting your filters or search term.</p>
+                <a href="<?= $B ?>/index.php" class="btn btn-primary">Clear Filters</a>
+            </div>
+        <?php else: ?>
         <div class="products-grid">
-        <?php foreach ($products as $i => $p):
-            $isFav = in_array($p['id'], $userFavs);
-            $isFeaturedCard = ($i === 4);
-            $dtype = $p['delivery_type'] ?? 'standard';
-            $chipLabel = $dtype === 'pickup' ? 'Pickup only' : 'Free delivery';
-            $chipIcon  = $dtype === 'pickup'
-                ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="10" height="10" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'
-                : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="10" height="10" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>';
-        ?>
+            <?php foreach ($products as $i => $p):
+                $isFav = in_array($p['id'], $userFavs);
+                $isFeaturedCard = ($i === 4);
+            ?>
             <div class="product-card <?= $isFeaturedCard ? 'featured' : '' ?>"
                  onclick="window.location='<?= $B ?>/product-details.php?id=<?= $p['id'] ?>'">
+
                 <div class="product-img-wrap">
                     <img src="<?= htmlspecialchars(getImageUrl($p['image'] ?? '')) ?>"
-                         alt="<?= htmlspecialchars($p['name']) ?>" loading="lazy"
+                         alt="<?= htmlspecialchars($p['name']) ?>"
+                         loading="eager"
                          onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'">
+
                     <?php if ($isFeaturedCard): ?>
                     <div class="review-avatars">
                         <div class="review-chip">
@@ -147,16 +168,23 @@ if (!empty($_GET['ajax'])) {
                         </div>
                     </div>
                     <?php endif; ?>
+
                     <button class="fav-btn <?= $isFav ? 'active' : '' ?>"
                             onclick="event.stopPropagation();toggleFav(<?= $p['id'] ?>,this)"
                             title="<?= $isFav ? 'Remove from favourites' : 'Add to favourites' ?>">
-                        <svg viewBox="0 0 24 24" fill="<?= $isFav ? '#EF4444' : 'none' ?>"
-                             stroke="<?= $isFav ? '#EF4444' : 'currentColor' ?>" stroke-width="2">
+                        <svg viewBox="0 0 24 24"
+                             fill="<?= $isFav ? '#EF4444' : 'none' ?>"
+                             stroke="<?= $isFav ? '#EF4444' : 'currentColor' ?>"
+                             stroke-width="2">
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                         </svg>
                     </button>
-                    <?php if ($p['is_top_item']): ?><span class="top-badge">Top item</span><?php endif; ?>
+
+                    <?php if ($p['is_top_item']): ?>
+                        <span class="top-badge">Top item</span>
+                    <?php endif; ?>
                 </div>
+
                 <div class="product-body">
                     <div class="product-name"><?= htmlspecialchars($p['name']) ?></div>
                     <?php if (!empty($p['store_name'])): ?>
@@ -180,42 +208,52 @@ if (!empty($_GET['ajax'])) {
                         <?php endif; ?>
                         <button class="price-btn"
                                 onclick="event.stopPropagation();addToCart(<?= $p['id'] ?>,1,this)">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                            </svg>
                             <?= fcfa($p['price']) ?>
                         </button>
                     </div>
+                    <?php
+                        $dtype = $p['delivery_type'] ?? 'standard';
+                        $chipLabel = $dtype === 'pickup' ? 'Pickup only' : 'Free delivery';
+                        $chipIcon = $dtype === 'pickup'
+                            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="10" height="10" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'
+                            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="10" height="10" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>';
+                    ?>
                     <div class="product-delivery-chip"><?= $chipIcon ?><?= $chipLabel ?></div>
-                    <a href="<?= $B ?>/product-details.php?id=<?= $p['id'] ?>" class="card-details-btn" onclick="event.stopPropagation()">
+
+                    <a href="<?= $B ?>/product-details.php?id=<?= $p['id'] ?>"
+                       class="card-details-btn"
+                       onclick="event.stopPropagation()">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
                         View Details
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto"><polyline points="9 18 15 12 9 6"/></svg>
                     </a>
                 </div>
             </div>
-        <?php endforeach; ?>
+            <?php endforeach; ?>
         </div>
+        <?php endif; ?>
+    </section>
+
+    <!-- ── Pagination Container (separate from grid) ────── -->
+    <div class="pagination-wrapper">
         <?php if ($totalPages > 1): ?>
         <div class="pagination">
             <?php for ($pg = 1; $pg <= $totalPages; $pg++):
-                $pgParams = $_GET;
-                unset($pgParams['ajax']);
-                $pgParams['page'] = $pg;
-                $pgUrl = '?' . http_build_query($pgParams);
+                $pgParams = array_merge($_GET, ['page' => $pg]);
+                $pgUrl    = '?' . http_build_query($pgParams);
             ?>
                 <a href="<?= $pgUrl ?>" class="page-btn <?= $pg === $page ? 'active' : '' ?>"><?= $pg ?></a>
             <?php endfor; ?>
         </div>
         <?php endif; ?>
-    <?php endif;
-    $html = ob_get_clean();
-    echo json_encode(['html' => $html, 'total' => $totalProducts, 'page' => $page]);
+    </div>
+    <?php
     exit;
 }
-
-// ── Brands for sidebar ────────────────────────────────────
-$allBrands = $pdo->query(
-    "SELECT DISTINCT brand FROM products WHERE brand IS NOT NULL AND brand != '' ORDER BY brand"
-)->fetchAll(PDO::FETCH_COLUMN);
 
 // ── Featured product for hero ─────────────────────────────
 $featured = $pdo->query(
@@ -641,7 +679,6 @@ include __DIR__ . '/includes/header.php';
             </h2>
         </div>
 
-        <div id="products-content">
         <?php if (empty($products)): ?>
             <div class="empty-state">
                 <div class="empty-icon">
@@ -742,7 +779,11 @@ include __DIR__ . '/includes/header.php';
             <?php endforeach; ?>
         </div>
 
-        <!-- Pagination -->
+        <?php endif; ?>
+    </section>
+
+    <!-- ── Pagination Container (separate from grid) ────── -->
+    <div class="pagination-wrapper">
         <?php if ($totalPages > 1): ?>
         <div class="pagination">
             <?php for ($pg = 1; $pg <= $totalPages; $pg++):
@@ -753,112 +794,7 @@ include __DIR__ . '/includes/header.php';
             <?php endfor; ?>
         </div>
         <?php endif; ?>
-        <?php endif; ?>
-        </div><!-- #products-content -->
-    </section>
+    </div>
 </div>
-
-<script>
-(function () {
-    const section = document.getElementById('products');
-    if (!section) return;
-
-    section.addEventListener('click', function (e) {
-        const btn = e.target.closest('.page-btn');
-        if (!btn) return;
-        e.preventDefault();
-
-        const href  = btn.getAttribute('href');
-        const sep   = href.includes('?') ? '&' : '?';
-        const ajaxUrl = href + sep + 'ajax=1';
-        const page  = new URLSearchParams(href.split('?')[1] || '').get('page') || '1';
-
-        // Fade grid while loading
-        const grid = section.querySelector('.products-grid, .empty-state');
-        if (grid) { grid.style.opacity = '0.4'; grid.style.pointerEvents = 'none'; }
-
-        fetch(ajaxUrl)
-            .then(r => r.json())
-            .then(data => {
-                document.getElementById('products-content').innerHTML = data.html;
-
-                const countEl = document.querySelector('.smart-bar-count strong');
-                if (countEl) countEl.textContent = data.total;
-
-                const newUrl = new URL(location.href);
-                newUrl.searchParams.set('page', page);
-                history.pushState({page}, '', newUrl.toString());
-
-                // Scroll so pagination stays visible at the bottom
-                const pag = document.querySelector('#products-content .pagination');
-                if (pag) {
-                    pag.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                } else {
-                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            })
-            .catch(() => { location.href = href; });
-    });
-
-    // Handle browser back/forward
-    window.addEventListener('popstate', () => location.reload());
-})();
-
-// AJAX category switching — swap grid in place, then scroll
-(function () {
-    const catTabs = document.querySelector('.category-tabs');
-    const section  = document.getElementById('products');
-    if (!catTabs || !section) return;
-
-    catTabs.addEventListener('click', function (e) {
-        const tab = e.target.closest('.cat-tab');
-        if (!tab) return;
-        e.preventDefault();
-
-        const href    = tab.getAttribute('href');
-        const ajaxUrl = href + (href.includes('?') ? '&' : '?') + 'ajax=1';
-
-        // Mark active tab immediately
-        catTabs.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-
-        // Show spinner inside the content wrapper instantly
-        const pc = document.getElementById('products-content');
-        if (pc) pc.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;padding:80px 0"><svg width="36" height="36" viewBox="0 0 36 36" fill="none" style="animation:spin .8s linear infinite"><circle cx="18" cy="18" r="14" stroke="#e9d5ff" stroke-width="4"/><path d="M32 18a14 14 0 0 0-14-14" stroke="#7c3aed" stroke-width="4" stroke-linecap="round"/></svg></div>';
-
-        // Scroll to products now (old products gone, spinner visible)
-        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-        fetch(ajaxUrl)
-            .then(r => r.json())
-            .then(data => {
-                document.getElementById('products-content').innerHTML = data.html;
-
-                const countEl = document.querySelector('.smart-bar-count strong');
-                if (countEl) countEl.textContent = data.total;
-
-                history.pushState({}, '', href);
-
-                // Scroll so the pagination is visible at the bottom of the viewport
-                const pag = document.querySelector('#products-content .pagination');
-                if (pag) {
-                    pag.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                } else {
-                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            })
-            .catch(() => { location.href = href; });
-    });
-})();
-
-// After full page load, smooth scroll to products on direct search URL
-window.addEventListener('load', function () {
-    const params = new URLSearchParams(location.search);
-    if (params.get('q')) {
-        const el = document.getElementById('products');
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-});
-</script>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>

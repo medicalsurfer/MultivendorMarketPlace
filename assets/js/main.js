@@ -5,6 +5,24 @@
 // Base URL set by footer.php (works for root and XAMPP subdirectory)
 const BASE = window.MLC_BASE || '';
 
+// ── Auto-scroll to products on search/filter ─────────────────
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasSearch = urlParams.has('q') && urlParams.get('q');
+    const hasCategory = urlParams.has('cat');
+    const hasFilters = urlParams.has('min_price') || urlParams.has('max_price') || 
+                       urlParams.has('min_rating') || urlParams.has('brands') || 
+                       urlParams.has('delivery');
+    
+    if (hasSearch || hasCategory || hasFilters) {
+        setTimeout(() => {
+            const productsSection = document.getElementById('products');
+            if (productsSection) {
+                productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100);
+    }
+});
 
 // ── FCFA Currency Helper ───────────────────────────────────
 function mlcFCFA(usdAmount) {
@@ -395,14 +413,18 @@ function initHeroCarousel() {
     // Only run on the index/shop page
     if (!document.getElementById('products')) return;
 
-    const productsSection = document.getElementById('products');
-    const navbarH = () => (document.querySelector('.navbar')?.offsetHeight || 70);
+    const navbarH = () => (document.querySelector('.navbar')?.offsetHeight || 0);
     const catBarH = () => (document.querySelector('.category-bar')?.offsetHeight || 0);
 
     function scrollToProducts() {
-        const offset = navbarH() + catBarH() + 8;
-        const top = productsSection.getBoundingClientRect().top + window.scrollY - offset;
-        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+        const section = document.getElementById('products');
+        if (!section) return;
+        // Scroll so products appear right at the top under navbar and category bar
+        const fixedHeaderHeight = navbarH() + catBarH();
+        window.scrollTo({ 
+            top: section.offsetTop - fixedHeaderHeight, 
+            behavior: 'smooth' 
+        });
     }
 
     function setLoading(on) {
@@ -425,6 +447,7 @@ function initHeroCarousel() {
         // Swap products grid
         const newGrid = doc.querySelector('.products-grid') || doc.querySelector('.empty-state');
         const oldGrid = document.querySelector('.products-grid') || document.querySelector('.empty-state');
+        
         if (newGrid && oldGrid) {
             oldGrid.style.opacity = '0';
             setTimeout(() => {
@@ -436,6 +459,8 @@ function initHeroCarousel() {
                 if (typeof initCardTilt === 'function') initCardTilt();
                 // Re-run reveal observer
                 if (typeof observeReveal === 'function') observeReveal();
+                // Scroll to products after fade-in completes
+                setTimeout(() => scrollToProducts(), 250);
             }, 180);
         }
 
@@ -444,11 +469,12 @@ function initHeroCarousel() {
         const oldTopbar = document.querySelector('.products-topbar');
         if (newTopbar && oldTopbar) oldTopbar.replaceWith(newTopbar);
 
-        // Swap pagination
-        const newPager = doc.querySelector('.pagination');
-        const oldPager = document.querySelector('.pagination');
-        if (newPager && oldPager) oldPager.replaceWith(newPager);
-        else if (!newPager && oldPager) oldPager.remove();
+        // Swap pagination (from separate pagination-wrapper container only)
+        const newPaginationWrapper = doc.querySelector('.pagination-wrapper');
+        const oldPaginationWrapper = document.querySelector('.pagination-wrapper');
+        if (newPaginationWrapper && oldPaginationWrapper) {
+            oldPaginationWrapper.replaceWith(newPaginationWrapper);
+        }
     }
 
     function updateActiveTabs(catParam) {
@@ -460,16 +486,16 @@ function initHeroCarousel() {
         });
     }
 
-    async function loadCategory(url, catParam) {
+    async function loadProducts(url, state = {}) {
         setLoading(true);
-        scrollToProducts();
         try {
             const res  = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
             const html = await res.text();
             swapProducts(html);
-            history.pushState({ cat: catParam }, '', url);
-            updateActiveTabs(catParam);
+            history.pushState(state, '', url);
+            updateActiveTabs(state.cat || '');
         } catch (err) {
+            console.error('Error loading products:', err);
             // Fallback to normal navigation on error
             window.location.href = url;
         } finally {
@@ -477,9 +503,9 @@ function initHeroCarousel() {
         }
     }
 
-    // Delegate click on all category tabs + nav dropdown items
+    // Delegate click on category tabs, nav dropdown items, and pagination links
     document.addEventListener('click', e => {
-        const link = e.target.closest('.cat-tab, .nav-dropdown-item');
+        const link = e.target.closest('.cat-tab, .nav-dropdown-item, .page-btn');
         if (!link) return;
         const href = link.getAttribute('href');
         if (!href || href.startsWith('javascript')) return;
@@ -488,19 +514,37 @@ function initHeroCarousel() {
         const fetchUrl = href.replace(/#.*$/, '');
         const urlObj   = new URL(fetchUrl, window.location.origin);
         const catParam = urlObj.searchParams.get('cat') || '';
+        const pageParam = urlObj.searchParams.get('page') || '1';
 
         // Close nav dropdown if open
         document.querySelector('.nav-products')?.classList.remove('open');
 
         e.preventDefault();
         e.stopPropagation();
-        loadCategory(fetchUrl, catParam);
+        loadProducts(fetchUrl, { cat: catParam, page: pageParam });
     }, true);
 
     // Handle browser back/forward
     window.addEventListener('popstate', e => {
         const catParam = e.state?.cat ?? new URLSearchParams(window.location.search).get('cat') ?? '';
-        loadCategory(window.location.href.replace(/#.*$/, ''), catParam);
+        const pageParam = e.state?.page ?? new URLSearchParams(window.location.search).get('page') ?? '1';
+        loadProducts(window.location.href.replace(/#.*$/, ''), { cat: catParam, page: pageParam });
+    });
+
+    // Handle search form submission with AJAX
+    document.addEventListener('submit', e => {
+        const form = e.target.closest('.hero-search');
+        if (!form) return;
+
+        e.preventDefault();
+        const formData = new FormData(form);
+        const searchParams = new URLSearchParams(formData);
+        const searchUrl = form.action + '?' + searchParams.toString();
+
+        // Get search query for state
+        const query = formData.get('q') || '';
+        
+        loadProducts(searchUrl, { query: query });
     });
 })();
 
