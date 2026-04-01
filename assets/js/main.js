@@ -35,7 +35,22 @@ function loadProductPage(pageNum, event) {
     urlParams.set('page', pageNum);
     const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
     
-    // Make AJAX request to load products instantly
+    const productsSection = document.getElementById('products');
+    const paginationWrapper = document.querySelector('.pagination-wrapper');
+    
+    if (!productsSection) return;
+    
+    // Add loading animation - fade out products
+    productsSection.style.opacity = '0.6';
+    productsSection.style.transform = 'translateY(8px)';
+    productsSection.style.transition = 'all 0.3s cubic-bezier(0.4,0,0.2,1)';
+    
+    // Add shimmer loading effect
+    const loadingShimmer = document.createElement('div');
+    loadingShimmer.className = 'pagination-loading-shimmer';
+    productsSection.parentElement.insertBefore(loadingShimmer, productsSection.nextSibling);
+    
+    // Make AJAX request
     fetch(newUrl, {
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
@@ -43,12 +58,6 @@ function loadProductPage(pageNum, event) {
     })
     .then(response => response.text())
     .then(html => {
-        // Update products section
-        const productsSection = document.getElementById('products');
-        const paginationWrapper = document.querySelector('.pagination-wrapper');
-        
-        if (!productsSection) return;
-        
         // Parse HTML to extract new content
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
@@ -57,7 +66,25 @@ function loadProductPage(pageNum, event) {
         const newPaginationWrapper = doc.querySelector('.pagination-wrapper');
         
         if (newProductsSection) {
-            productsSection.innerHTML = newProductsSection.innerHTML;
+            // Animate out
+            productsSection.style.opacity = '0';
+            productsSection.style.transform = 'translateY(12px)';
+            
+            setTimeout(() => {
+                productsSection.innerHTML = newProductsSection.innerHTML;
+                
+                // Animate in with slide effect
+                productsSection.style.opacity = '0';
+                productsSection.style.transform = 'translateY(-12px)';
+                productsSection.style.transition = 'none';
+                
+                // Trigger reflow to restart animation
+                void productsSection.offsetHeight;
+                
+                productsSection.style.transition = 'all 0.5s cubic-bezier(0.34,1.56,0.64,1)';
+                productsSection.style.opacity = '1';
+                productsSection.style.transform = 'translateY(0)';
+            }, 300);
         }
         
         if (newPaginationWrapper && paginationWrapper) {
@@ -67,14 +94,26 @@ function loadProductPage(pageNum, event) {
         // Update URL without page reload
         window.history.pushState({page: pageNum}, '', newUrl);
         
+        // Remove shimmer
+        setTimeout(() => {
+            if (loadingShimmer.parentElement) {
+                loadingShimmer.remove();
+            }
+        }, 300);
+        
         // Scroll to products section smoothly
         setTimeout(() => {
             productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
+        }, 200);
     })
     .catch(error => {
         console.error('Error loading products:', error);
         showToast('Failed to load products', 'error');
+        productsSection.style.opacity = '1';
+        productsSection.style.transform = 'translateY(0)';
+        if (loadingShimmer.parentElement) {
+            loadingShimmer.remove();
+        }
     });
 }
 
