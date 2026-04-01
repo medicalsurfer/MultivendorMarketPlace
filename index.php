@@ -242,11 +242,10 @@ if ($isAjax) {
     <div class="pagination-wrapper">
         <?php if ($totalPages > 1): ?>
         <div class="pagination">
-            <?php for ($pg = 1; $pg <= $totalPages; $pg++):
-                $pgParams = array_merge($_GET, ['page' => $pg]);
-                $pgUrl    = '?' . http_build_query($pgParams);
-            ?>
-                <a href="<?= $pgUrl ?>" class="page-btn <?= $pg === $page ? 'active' : '' ?>"><?= $pg ?></a>
+            <?php for ($pg = 1; $pg <= $totalPages; $pg++): ?>
+                <button type="button" class="page-btn <?= $pg === $page ? 'active' : '' ?>" 
+                        onclick="loadProductPage(<?= $pg ?>, event)"
+                        data-page="<?= $pg ?>"><?= $pg ?></button>
             <?php endfor; ?>
         </div>
         <?php endif; ?>
@@ -786,11 +785,10 @@ include __DIR__ . '/includes/header.php';
     <div class="pagination-wrapper">
         <?php if ($totalPages > 1): ?>
         <div class="pagination">
-            <?php for ($pg = 1; $pg <= $totalPages; $pg++):
-                $pgParams = array_merge($_GET, ['page' => $pg]);
-                $pgUrl    = '?' . http_build_query($pgParams);
-            ?>
-                <a href="<?= $pgUrl ?>" class="page-btn <?= $pg === $page ? 'active' : '' ?>"><?= $pg ?></a>
+            <?php for ($pg = 1; $pg <= $totalPages; $pg++): ?>
+                <button type="button" class="page-btn <?= $pg === $page ? 'active' : '' ?>" 
+                        onclick="loadProductPage(<?= $pg ?>, event)"
+                        data-page="<?= $pg ?>"><?= $pg ?></button>
             <?php endfor; ?>
         </div>
         <?php endif; ?>

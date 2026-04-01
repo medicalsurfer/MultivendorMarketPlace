@@ -24,6 +24,56 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// ── Load products for pagination (AJAX) ──────────────────────
+function loadProductPage(pageNum, event) {
+    if (event) {
+        event.preventDefault();
+    }
+    
+    // Get current query parameters and update page
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('page', pageNum);
+    
+    // Make AJAX request
+    fetch(`${BASE}/index.php?${urlParams.toString()}`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.text())
+    .then(html => {
+        // Update products section
+        const productsSection = document.getElementById('products');
+        const paginationWrapper = document.querySelector('.pagination-wrapper');
+        
+        if (!productsSection) return;
+        
+        // Parse HTML to extract new content
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        
+        const newProductsSection = doc.getElementById('products');
+        const newPaginationWrapper = doc.querySelector('.pagination-wrapper');
+        
+        if (newProductsSection) {
+            productsSection.innerHTML = newProductsSection.innerHTML;
+        }
+        
+        if (newPaginationWrapper && paginationWrapper) {
+            paginationWrapper.innerHTML = newPaginationWrapper.innerHTML;
+        }
+        
+        // Scroll to products section
+        setTimeout(() => {
+            productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    })
+    .catch(error => {
+        console.error('Error loading products:', error);
+        showToast('Failed to load products', 'error');
+    });
+}
+
 // ── FCFA Currency Helper ───────────────────────────────────
 function mlcFCFA(usdAmount) {
     const xaf = Math.round(parseFloat(usdAmount) * 655);
