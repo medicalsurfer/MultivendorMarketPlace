@@ -789,7 +789,13 @@ include __DIR__ . '/includes/header.php';
                 newUrl.searchParams.set('page', page);
                 history.pushState({page}, '', newUrl.toString());
 
-                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Scroll so pagination stays visible at the bottom
+                const pag = document.querySelector('#products-content .pagination');
+                if (pag) {
+                    pag.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                } else {
+                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             })
             .catch(() => { location.href = href; });
     });
@@ -832,6 +838,14 @@ include __DIR__ . '/includes/header.php';
                 if (countEl) countEl.textContent = data.total;
 
                 history.pushState({}, '', href);
+
+                // Scroll so the pagination is visible at the bottom of the viewport
+                const pag = document.querySelector('#products-content .pagination');
+                if (pag) {
+                    pag.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                } else {
+                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             })
             .catch(() => { location.href = href; });
     });
