@@ -35,47 +35,42 @@ function loadProductPage(pageNum, event) {
     urlParams.set('page', pageNum);
     const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
     
-    // Scroll to top first to show hero
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-    // Make AJAX request with a small delay to ensure scroll happens
-    setTimeout(() => {
-        fetch(newUrl, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.text())
-        .then(html => {
-            // Update products section
-            const productsSection = document.getElementById('products');
-            const paginationWrapper = document.querySelector('.pagination-wrapper');
-            
-            if (!productsSection) return;
-            
-            // Parse HTML to extract new content
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            
-            const newProductsSection = doc.getElementById('products');
-            const newPaginationWrapper = doc.querySelector('.pagination-wrapper');
-            
-            if (newProductsSection) {
-                productsSection.innerHTML = newProductsSection.innerHTML;
-            }
-            
-            if (newPaginationWrapper && paginationWrapper) {
-                paginationWrapper.innerHTML = newPaginationWrapper.innerHTML;
-            }
-            
-            // Update URL without page reload
-            window.history.pushState({page: pageNum}, '', newUrl);
-        })
-        .catch(error => {
-            console.error('Error loading products:', error);
-            showToast('Failed to load products', 'error');
-        });
-    }, 500);
+    // Make AJAX request to load products instantly
+    fetch(newUrl, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.text())
+    .then(html => {
+        // Update products section
+        const productsSection = document.getElementById('products');
+        const paginationWrapper = document.querySelector('.pagination-wrapper');
+        
+        if (!productsSection) return;
+        
+        // Parse HTML to extract new content
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        
+        const newProductsSection = doc.getElementById('products');
+        const newPaginationWrapper = doc.querySelector('.pagination-wrapper');
+        
+        if (newProductsSection) {
+            productsSection.innerHTML = newProductsSection.innerHTML;
+        }
+        
+        if (newPaginationWrapper && paginationWrapper) {
+            paginationWrapper.innerHTML = newPaginationWrapper.innerHTML;
+        }
+        
+        // Update URL without page reload
+        window.history.pushState({page: pageNum}, '', newUrl);
+    })
+    .catch(error => {
+        console.error('Error loading products:', error);
+        showToast('Failed to load products', 'error');
+    });
 }
 
 // ── FCFA Currency Helper ───────────────────────────────────
