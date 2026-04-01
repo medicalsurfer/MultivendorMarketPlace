@@ -115,9 +115,8 @@ if (isLoggedIn()) {
 // ── AJAX pagination handler ──────────────────────────────
 if (!empty($_GET['ajax'])) {
     header('Content-Type: application/json');
-    ob_start(); ?>
-    <div id="products-content">
-    <?php if (empty($products)): ?>
+    ob_start();
+    if (empty($products)): ?>
         <div class="empty-state">
             <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="48" height="48"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
             <h3>No products found</h3>
@@ -207,9 +206,8 @@ if (!empty($_GET['ajax'])) {
             <?php endfor; ?>
         </div>
         <?php endif; ?>
-    <?php endif; ?>
-    </div><!-- #products-content -->
-    <?php $html = ob_get_clean();
+    <?php endif;
+    $html = ob_get_clean();
     echo json_encode(['html' => $html, 'total' => $totalProducts, 'page' => $page]);
     exit;
 }
@@ -782,7 +780,7 @@ include __DIR__ . '/includes/header.php';
         fetch(ajaxUrl)
             .then(r => r.json())
             .then(data => {
-                document.getElementById('products-content').outerHTML = data.html;
+                document.getElementById('products-content').innerHTML = data.html;
 
                 const countEl = document.querySelector('.smart-bar-count strong');
                 if (countEl) countEl.textContent = data.total;
@@ -828,7 +826,7 @@ include __DIR__ . '/includes/header.php';
         fetch(ajaxUrl)
             .then(r => r.json())
             .then(data => {
-                document.getElementById('products-content').outerHTML = data.html;
+                document.getElementById('products-content').innerHTML = data.html;
 
                 const countEl = document.querySelector('.smart-bar-count strong');
                 if (countEl) countEl.textContent = data.total;
