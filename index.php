@@ -825,17 +825,22 @@ include __DIR__ . '/includes/header.php';
         catTabs.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
 
-        // Fade out current grid
-        const grid = section.querySelector('.products-grid, .empty-state');
-        if (grid) { grid.style.opacity = '0.4'; grid.style.pointerEvents = 'none'; }
+        // Immediately wipe old products and show a spinner
+        section.querySelector('.products-grid, .empty-state')?.remove();
         section.querySelector('.pagination')?.remove();
+        const spinner = document.createElement('div');
+        spinner.id = 'cat-spinner';
+        spinner.style.cssText = 'display:flex;justify-content:center;align-items:center;padding:80px 0;';
+        spinner.innerHTML = '<svg width="36" height="36" viewBox="0 0 36 36" fill="none" style="animation:spin .8s linear infinite"><circle cx="18" cy="18" r="14" stroke="#e9d5ff" stroke-width="4"/><path d="M32 18a14 14 0 0 0-14-14" stroke="#7c3aed" stroke-width="4" stroke-linecap="round"/></svg>';
+        section.appendChild(spinner);
+
+        // Scroll to products NOW (spinner is showing, old products are gone)
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
         fetch(ajaxUrl)
             .then(r => r.json())
             .then(data => {
-                // Swap grid
-                section.querySelector('.products-grid, .empty-state')?.remove();
-                section.querySelector('.pagination')?.remove();
+                document.getElementById('cat-spinner')?.remove();
                 const tmp = document.createElement('div');
                 tmp.innerHTML = data.html;
                 while (tmp.firstChild) section.appendChild(tmp.firstChild);
@@ -846,9 +851,6 @@ include __DIR__ . '/includes/header.php';
 
                 // Update URL without reload
                 history.pushState({}, '', href);
-
-                // Now scroll to products (grid is already updated)
-                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
             })
             .catch(() => { location.href = href; });
     });
