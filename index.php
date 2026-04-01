@@ -115,8 +115,9 @@ if (isLoggedIn()) {
 // ── AJAX pagination handler ──────────────────────────────
 if (!empty($_GET['ajax'])) {
     header('Content-Type: application/json');
-    ob_start();
-    if (empty($products)): ?>
+    ob_start(); ?>
+    <div id="products-content">
+    <?php if (empty($products)): ?>
         <div class="empty-state">
             <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="48" height="48"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
             <h3>No products found</h3>
@@ -206,8 +207,9 @@ if (!empty($_GET['ajax'])) {
             <?php endfor; ?>
         </div>
         <?php endif; ?>
-    <?php endif;
-    $html = ob_get_clean();
+    <?php endif; ?>
+    </div><!-- #products-content -->
+    <?php $html = ob_get_clean();
     echo json_encode(['html' => $html, 'total' => $totalProducts, 'page' => $page]);
     exit;
 }
@@ -641,6 +643,7 @@ include __DIR__ . '/includes/header.php';
             </h2>
         </div>
 
+        <div id="products-content">
         <?php if (empty($products)): ?>
             <div class="empty-state">
                 <div class="empty-icon">
@@ -753,6 +756,7 @@ include __DIR__ . '/includes/header.php';
         </div>
         <?php endif; ?>
         <?php endif; ?>
+        </div><!-- #products-content -->
     </section>
 </div>
 
@@ -778,29 +782,18 @@ include __DIR__ . '/includes/header.php';
         fetch(ajaxUrl)
             .then(r => r.json())
             .then(data => {
-                // Remove old grid + pagination
-                section.querySelector('.products-grid, .empty-state')?.remove();
-                section.querySelector('.pagination')?.remove();
+                document.getElementById('products-content').outerHTML = data.html;
 
-                // Inject new content
-                const tmp = document.createElement('div');
-                tmp.innerHTML = data.html;
-                while (tmp.firstChild) section.appendChild(tmp.firstChild);
-
-                // Update product count badge
-                const countEl = section.querySelector('.smart-bar-count strong')
-                             || document.querySelector('.smart-bar-count strong');
+                const countEl = document.querySelector('.smart-bar-count strong');
                 if (countEl) countEl.textContent = data.total;
 
-                // Update browser URL cleanly
                 const newUrl = new URL(location.href);
                 newUrl.searchParams.set('page', page);
                 history.pushState({page}, '', newUrl.toString());
 
-                // Scroll products into view
                 section.scrollIntoView({ behavior: 'smooth', block: 'start' });
             })
-            .catch(() => { location.href = href; }); // graceful fallback
+            .catch(() => { location.href = href; });
     });
 
     // Handle browser back/forward
@@ -825,31 +818,21 @@ include __DIR__ . '/includes/header.php';
         catTabs.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
 
-        // Immediately wipe old products and show a spinner
-        section.querySelector('.products-grid, .empty-state')?.remove();
-        section.querySelector('.pagination')?.remove();
-        const spinner = document.createElement('div');
-        spinner.id = 'cat-spinner';
-        spinner.style.cssText = 'display:flex;justify-content:center;align-items:center;padding:80px 0;';
-        spinner.innerHTML = '<svg width="36" height="36" viewBox="0 0 36 36" fill="none" style="animation:spin .8s linear infinite"><circle cx="18" cy="18" r="14" stroke="#e9d5ff" stroke-width="4"/><path d="M32 18a14 14 0 0 0-14-14" stroke="#7c3aed" stroke-width="4" stroke-linecap="round"/></svg>';
-        section.appendChild(spinner);
+        // Show spinner inside the content wrapper instantly
+        const pc = document.getElementById('products-content');
+        if (pc) pc.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;padding:80px 0"><svg width="36" height="36" viewBox="0 0 36 36" fill="none" style="animation:spin .8s linear infinite"><circle cx="18" cy="18" r="14" stroke="#e9d5ff" stroke-width="4"/><path d="M32 18a14 14 0 0 0-14-14" stroke="#7c3aed" stroke-width="4" stroke-linecap="round"/></svg></div>';
 
-        // Scroll to products NOW (spinner is showing, old products are gone)
+        // Scroll to products now (old products gone, spinner visible)
         section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
         fetch(ajaxUrl)
             .then(r => r.json())
             .then(data => {
-                document.getElementById('cat-spinner')?.remove();
-                const tmp = document.createElement('div');
-                tmp.innerHTML = data.html;
-                while (tmp.firstChild) section.appendChild(tmp.firstChild);
+                document.getElementById('products-content').outerHTML = data.html;
 
-                // Update product count
                 const countEl = document.querySelector('.smart-bar-count strong');
                 if (countEl) countEl.textContent = data.total;
 
-                // Update URL without reload
                 history.pushState({}, '', href);
             })
             .catch(() => { location.href = href; });
