@@ -807,10 +807,57 @@ include __DIR__ . '/includes/header.php';
     window.addEventListener('popstate', () => location.reload());
 })();
 
-// After full page load, smooth scroll to products when search or category is active
+// AJAX category switching — swap grid in place, then scroll
+(function () {
+    const catTabs = document.querySelector('.category-tabs');
+    const section  = document.getElementById('products');
+    if (!catTabs || !section) return;
+
+    catTabs.addEventListener('click', function (e) {
+        const tab = e.target.closest('.cat-tab');
+        if (!tab) return;
+        e.preventDefault();
+
+        const href    = tab.getAttribute('href');
+        const ajaxUrl = href + (href.includes('?') ? '&' : '?') + 'ajax=1';
+
+        // Mark active tab immediately
+        catTabs.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        // Fade out current grid
+        const grid = section.querySelector('.products-grid, .empty-state');
+        if (grid) { grid.style.opacity = '0.4'; grid.style.pointerEvents = 'none'; }
+        section.querySelector('.pagination')?.remove();
+
+        fetch(ajaxUrl)
+            .then(r => r.json())
+            .then(data => {
+                // Swap grid
+                section.querySelector('.products-grid, .empty-state')?.remove();
+                section.querySelector('.pagination')?.remove();
+                const tmp = document.createElement('div');
+                tmp.innerHTML = data.html;
+                while (tmp.firstChild) section.appendChild(tmp.firstChild);
+
+                // Update product count
+                const countEl = document.querySelector('.smart-bar-count strong');
+                if (countEl) countEl.textContent = data.total;
+
+                // Update URL without reload
+                history.pushState({}, '', href);
+
+                // Now scroll to products (grid is already updated)
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            })
+            .catch(() => { location.href = href; });
+    });
+})();
+
+// After full page load, smooth scroll to products on direct search URL
 window.addEventListener('load', function () {
     const params = new URLSearchParams(location.search);
-    if (params.get('q') || params.get('cat')) {
+    if (params.get('q')) {
         const el = document.getElementById('products');
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
