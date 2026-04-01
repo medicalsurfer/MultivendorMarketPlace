@@ -66,6 +66,11 @@ function loadProductPage(pageNum, event) {
         
         // Update URL without page reload
         window.history.pushState({page: pageNum}, '', newUrl);
+        
+        // Scroll to products section smoothly
+        setTimeout(() => {
+            productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
     })
     .catch(error => {
         console.error('Error loading products:', error);
