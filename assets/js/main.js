@@ -34,6 +34,9 @@ function loadProductPage(pageNum, event) {
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set('page', pageNum);
     
+    // Scroll to top first to show hero
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
     // Make AJAX request
     fetch(`${BASE}/index.php?${urlParams.toString()}`, {
         headers: {
@@ -62,11 +65,6 @@ function loadProductPage(pageNum, event) {
         if (newPaginationWrapper && paginationWrapper) {
             paginationWrapper.innerHTML = newPaginationWrapper.innerHTML;
         }
-        
-        // Scroll to products section
-        setTimeout(() => {
-            productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
     })
     .catch(error => {
         console.error('Error loading products:', error);
