@@ -807,14 +807,14 @@ include __DIR__ . '/includes/header.php';
     window.addEventListener('popstate', () => location.reload());
 })();
 
-// Auto-scroll to products when a search or category filter is active
-(function () {
+// After full page load, smooth scroll to products when search or category is active
+window.addEventListener('load', function () {
     const params = new URLSearchParams(location.search);
     if (params.get('q') || params.get('cat')) {
         const el = document.getElementById('products');
-        if (el) el.scrollIntoView({ behavior: 'instant', block: 'start' });
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-})();
+});
 </script>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>
